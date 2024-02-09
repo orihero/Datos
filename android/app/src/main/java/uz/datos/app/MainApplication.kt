@@ -1,4 +1,4 @@
-package com.datos
+package uz.datos.app
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1042709637721",
+    "project_id": "datos-2024f",
+    "storage_bucket": "datos-2024f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042709637721:android:fa257f34962bf6771c9f48",
+        "android_client_info": {
+          "package_name": "uz.datos.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042709637721-ffg97tuir6ihlsa8t7ujqnesh9mckvgh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYoE-SlE5Ozaij88634CLFD9HzfE2IDvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042709637721-ffg97tuir6ihlsa8t7ujqnesh9mckvgh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

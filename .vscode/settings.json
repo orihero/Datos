@@ -1,0 +1,9 @@
+{
+    "emmet.excludeLanguages": [
+        "markdown",
+        "typescript",
+        "javascript",
+        "typescriptreact",
+        "javascriptreact"
+    ]
+}
