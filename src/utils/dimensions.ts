@@ -1,5 +1,6 @@
-import {Dimensions} from 'react-native';
-const {width, height} = Dimensions.get('window');
+import RN from 'components/RN';
+
+const {width, height} = RN.Dimensions.get('window');
 
 const SIZES = {
   width,

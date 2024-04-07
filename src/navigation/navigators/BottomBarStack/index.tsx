@@ -21,7 +21,7 @@ const BottomBarStack = () => {
   return (
     <Tab.Navigator
       screenOptions={bottomBarOptions.options}
-      tabBar={MyBottomBar}>
+      tabBar={props => <MyBottomBar {...props} />}>
       <Tab.Screen name={BOTTOM_BAR_STACK.HOME} component={HomeScreen} />
       <Tab.Screen name={BOTTOM_BAR_STACK.WALLET} component={WalletScreen} />
       <Tab.Screen

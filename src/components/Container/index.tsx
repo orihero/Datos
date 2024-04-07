@@ -1,16 +1,47 @@
 import RN from 'components/RN';
-import React, {FC, PropsWithChildren} from 'react';
+import {COLORS} from 'constants/colors';
+import {useAppViewInsets} from 'hooks/useAppViewInsets';
+import React, {FC, PropsWithChildren, ReactNode} from 'react';
 
-interface ContainerProps extends PropsWithChildren {}
+interface ContainerProps extends PropsWithChildren {
+  background?: string;
+  Header?: ReactNode;
+  Footer?: ReactNode;
+  isScroll?: boolean;
+  isPaddingTop?: boolean;
+}
 
-const Container: FC<ContainerProps> = ({children}) => {
-  return <RN.View style={styles.container}>{children}</RN.View>;
+const Container: FC<ContainerProps> = ({
+  children,
+  background = COLORS.black,
+  isScroll = false,
+  isPaddingTop = false,
+  Header,
+  Footer,
+}) => {
+  const {paddingTop} = useAppViewInsets();
+  const Main = isScroll ? RN.ScrollView : RN.View;
+  return (
+    <RN.View
+      style={[
+        styles.container,
+        {backgroundColor: background},
+        isPaddingTop && {paddingTop},
+      ]}>
+      {Header}
+      <Main style={styles.main}>{children}</Main>
+      {Footer}
+    </RN.View>
+  );
 };
 
 const styles = RN.StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
     flex: 1,
+  },
+  main: {
+    flex: 1,
+    paddingHorizontal: 10,
   },
 });
 

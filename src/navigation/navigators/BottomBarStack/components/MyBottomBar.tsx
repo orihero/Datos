@@ -6,6 +6,7 @@ import React, {FC} from 'react';
 import {addAlpha} from 'utils/color';
 import {SIZES} from 'utils/dimensions';
 import {BottomBarIcons, bottomBarOptions} from '../BottomBarStack.constants';
+import {BlurView} from '@react-native-community/blur';
 import {map} from 'lodash';
 
 const MyBottomBar: FC<BottomTabBarProps> = ({
@@ -55,7 +56,7 @@ const MyBottomBar: FC<BottomTabBarProps> = ({
         testID={options.tabBarTestID}
         onPress={onPress}
         onLongPress={onLongPress}
-        style={styles.button}>
+        style={[styles.button, isFocused && styles.activeButton]}>
         <Icon size={25} color={activeColor} />
         <RN.Text style={[styles.buttonLabel, {color: activeColor}]}>
           {bottomBarOptions.list[index].label}
@@ -65,7 +66,15 @@ const MyBottomBar: FC<BottomTabBarProps> = ({
   };
 
   return (
-    <RN.View style={styles.container}>{map(state.routes, renderItem)}</RN.View>
+    <RN.View style={styles.container}>
+      <BlurView
+        blurType="dark"
+        blurAmount={10}
+        reducedTransparencyFallbackColor="white"
+        style={[RN.StyleSheet.absoluteFill, styles.blurView]}
+      />
+      {map(state.routes, renderItem)}
+    </RN.View>
   );
 };
 
@@ -79,16 +88,28 @@ const styles = RN.StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    overflow: 'hidden',
+    paddingHorizontal: 30,
   },
   button: {
     flex: 1,
     height: 72,
     alignItems: 'center',
     justifyContent: 'center',
+    borderTopWidth: 2,
+    borderColor: COLORS.transparent,
+  },
+  activeButton: {
+    backgroundColor: addAlpha(COLORS.blue2, 0.2),
+    borderColor: COLORS.blue2,
   },
   buttonLabel: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  blurView: {
+    borderRadius: 40,
   },
 });
 
