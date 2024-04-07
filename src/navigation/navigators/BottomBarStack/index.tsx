@@ -1,9 +1,12 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BOTTOM_BAR_STACK} from '../routes';
-import {Text} from 'react-native';
 import {bottomBarOptions} from './BottomBarStack.constants';
 import MyBottomBar from './components/MyBottomBar';
+import ProfileScreen from 'screens/main/profile';
+import WalletScreen from 'screens/main/wallet';
+import StatisticsScreen from 'screens/main/statistics';
+import HomeScreen from 'screens/main/home';
 
 export type BottomBarStackParamList = {
   [BOTTOM_BAR_STACK.HOME]: undefined;
@@ -29,10 +32,5 @@ const BottomBarStack = () => {
     </Tab.Navigator>
   );
 };
-
-const HomeScreen = () => <Text>HOME Screen</Text>;
-const WalletScreen = () => <Text>WALLET Screen</Text>;
-const StatisticsScreen = () => <Text>STATISTICS Screen</Text>;
-const ProfileScreen = () => <Text>PROFILE Screen</Text>;
 
 export default BottomBarStack;
