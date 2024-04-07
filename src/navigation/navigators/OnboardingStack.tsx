@@ -4,11 +4,11 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import React from 'react';
-import {RootStackParamList, RootStackScreenProps} from '.';
-import SplashScreen from '../screens/onboarding/splash';
-import OnboardingStepsScreen from '../screens/onboarding/steps';
 import {ROUTES} from './routes';
-import OnboardingLanuageScreen from '../screens/onboarding/language';
+import SplashScreen from 'screens/onboarding/splash';
+import OnboardingLanuageScreen from 'screens/onboarding/language';
+import OnboardingStepsScreen from 'screens/onboarding/steps';
+import {RootStackParamList, RootStackScreenProps} from './MainStack';
 
 export type OnbordingStackParamList = {
   [ROUTES.ONBARDING.SPLASH]: undefined;

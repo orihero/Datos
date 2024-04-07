@@ -1,7 +1,18 @@
 export const COLORS = {
   blue: '#0166FE',
-  black: '#000',
-  white: '#fff',
+  blue2: '#386BF6',
+  black: '#000000',
+  white: '#ffffff',
   dargGray: '#282828',
+  ebon: '#1E1E1E',
   lightGray: '#3B3B3B',
+  skyPurpil: '#9DB2CE',
+  transparent: 'transparent',
+};
+
+export const HIT_SLOP = {
+  top: 20,
+  right: 20,
+  bottom: 20,
+  left: 20,
 };

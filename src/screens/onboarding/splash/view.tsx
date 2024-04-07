@@ -1,7 +1,6 @@
 import {
   Animated,
   Dimensions,
-  StyleSheet,
   Text,
   TextStyle,
   View,
@@ -11,8 +10,8 @@ import React, {useEffect, useRef} from 'react';
 import {COLORS} from '../../../constants/colors';
 import {splashStyles} from './styles';
 import {useNavigation} from '@react-navigation/native';
-import {ONBOARDING_STACK, ROUTES} from '../../../routes/routes';
-import {OnbardingStackProps} from '../../../routes/onboarding';
+import {ONBOARDING_STACK, ROUTES} from 'navigation/navigators/routes';
+import {OnbardingStackProps} from 'navigation/navigators/OnboardingStack';
 
 const {width: wWidth, height: wHeight} = Dimensions.get('screen');
 
@@ -115,7 +114,7 @@ const SplashScreen = () => {
           duration,
           delay: duration,
         }).start(
-          i == 4
+          i === 4
             ? () => {
                 navigation.navigate(ROUTES.ONBARDING.ONBOARDING_LANGUAGE);
               }
@@ -123,7 +122,7 @@ const SplashScreen = () => {
         );
       }, i * (duration * 2));
     }
-  }, []);
+  }, [animationValue, navigation]);
 
   const {text, view} = animationInterpolationMapper(animationValue);
 

@@ -1,15 +1,11 @@
-import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {
-  NavigationContainer,
-  NavigatorScreenParams,
-} from '@react-navigation/native';
-import OnboardingStack, {OnbordingStackParamList} from './onboarding';
+import {NavigatorScreenParams} from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import {ROUTES} from './routes';
+import OnboardingStack, {OnbordingStackParamList} from './OnboardingStack';
 
 export type RootStackParamList = {
   [ROUTES.ROOT.ONBOARDING]: NavigatorScreenParams<OnbordingStackParamList>;
@@ -22,7 +18,7 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> =
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const RootStack = () => {
+const MainStack = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name={ROUTES.ROOT.ONBOARDING} component={OnboardingStack} />
@@ -30,12 +26,4 @@ const RootStack = () => {
   );
 };
 
-const RootNavigation = () => {
-  return (
-    <NavigationContainer>
-      <RootStack />
-    </NavigationContainer>
-  );
-};
-
-export default RootNavigation;
+export default MainStack;

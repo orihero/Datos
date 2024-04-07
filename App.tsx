@@ -1,5 +1,6 @@
+import {NavigationContainer} from '@react-navigation/native';
+import MainStack, {RootStackParamList} from 'navigation/navigators/MainStack';
 import React from 'react';
-import RootNavigation, {RootStackParamList} from './src/routes';
 
 declare global {
   namespace ReactNavigation {
@@ -7,8 +8,10 @@ declare global {
   }
 }
 
-const App = () => {
-  return <RootNavigation />;
-};
+const App = () => (
+  <NavigationContainer>
+    <MainStack />
+  </NavigationContainer>
+);
 
 export default App;
