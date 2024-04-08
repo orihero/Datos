@@ -32,7 +32,7 @@ const styles = RN.StyleSheet.create({
   },
   buttonText: {
     color: COLORS.white,
-    fontSize: normalizeHeight(18),
+    fontSize: 18,
   },
   button: {
     height: normalizeHeight(65),

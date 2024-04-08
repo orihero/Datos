@@ -2,11 +2,14 @@ import Container from 'components/Container';
 import React from 'react';
 import {HomeHeader} from './ui';
 import {QuestionCard} from 'components/Cards';
+import RN from 'components/RN';
 
 export default function HomeScreen() {
   return (
     <Container Header={<HomeHeader />}>
-      <QuestionCard />
+      <RN.View ph={12} pt={20} flex={1}>
+        <QuestionCard />
+      </RN.View>
     </Container>
   );
 }
