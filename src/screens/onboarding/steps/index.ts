@@ -2,4 +2,4 @@
 
 // export default OnboardingStepsScreen;
 
-export {default} from 'navigation/navigators/BottomBarStack';
+export {default} from 'shared/navigation/navigators/BottomBarStack';

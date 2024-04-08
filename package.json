@@ -9,7 +9,8 @@
     "start": "react-native start",
     "test": "jest",
     "a": "react-native run-android",
-    "pods": "cd ios && bundle install &&  RCT_NEW_ARCH_ENABLED=1 && NO_FLIPPER=1 bundle exec pod install"
+    "pods": "cd ios && bundle install &&  RCT_NEW_ARCH_ENABLED=1 && NO_FLIPPER=1 bundle exec pod install",
+    "assets": "npx react-native-asset"
   },
   "dependencies": {
     "@react-native-community/blur": "^4.4.0",

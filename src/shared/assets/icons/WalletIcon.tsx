@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Svg, {Path} from 'react-native-svg';
-import {IIconProps} from '../../@types';
+import {IIconProps} from '../../../@types';
 import {COLORS} from '../../constants/colors';
 
 const WalletIcon = ({size, color}: IIconProps) => {

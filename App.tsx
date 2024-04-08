@@ -1,9 +1,11 @@
 import {NavigationContainer} from '@react-navigation/native';
-import MainStack, {RootStackParamList} from 'navigation/navigators/MainStack';
+import MainStack, {
+  RootStackParamList,
+} from 'shared/navigation/navigators/MainStack';
 import React from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {CoreStyle} from 'styles/globalStyles';
+import {CoreStyle} from 'shared/styles/globalStyles';
 
 declare global {
   namespace ReactNavigation {

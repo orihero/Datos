@@ -1,8 +1,8 @@
 import {useMemo} from 'react';
 import {StatusBar} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {verticalScale} from 'utils/dimensions';
-import {isAndroid, isIOS} from 'utils/platform';
+import {normalizeHeight} from 'shared/utils/dimensions';
+import {isAndroid, isIOS} from 'shared/utils/platform';
 
 const BASE_TOP = 35;
 export const useAppViewInsets = () => {
@@ -24,7 +24,7 @@ export const useAppViewInsets = () => {
     [bottom],
   );
   return {
-    paddingTop: verticalScale(paddingTop),
-    paddingBottom: verticalScale(paddingBottom),
+    paddingTop: normalizeHeight(paddingTop),
+    paddingBottom: normalizeHeight(paddingBottom),
   };
 };

@@ -1,9 +1,9 @@
 import {BottomBarOptions} from '@types';
 import {BOTTOM_BAR_STACK} from '../routes';
-import HomeIcon from 'assets/icons/HomeIcon';
-import WalletIcon from 'assets/icons/WalletIcon';
-import GraphIcon from 'assets/icons/GraphIcon';
-import UserIcon from 'assets/icons/UserIcon';
+import HomeIcon from 'shared/assets/icons/HomeIcon';
+import WalletIcon from 'shared/assets/icons/WalletIcon';
+import GraphIcon from 'shared/assets/icons/GraphIcon';
+import UserIcon from 'shared/assets/icons/UserIcon';
 
 export const bottomBarOptions: BottomBarOptions = {
   options: {

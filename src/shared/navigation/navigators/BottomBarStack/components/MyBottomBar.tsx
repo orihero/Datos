@@ -1,10 +1,10 @@
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import RN from 'components/RN';
-import {COLORS} from 'constants/colors';
-import {BOTTOM_BAR_STACK} from 'navigation/navigators/routes';
+import {COLORS} from 'shared/constants/colors';
+import {BOTTOM_BAR_STACK} from 'shared/navigation/navigators/routes';
 import React, {FC} from 'react';
-import {addAlpha} from 'utils/color';
-import {SIZES} from 'utils/dimensions';
+import {addAlpha} from 'shared/utils/color';
+import {SIZES} from 'shared/utils/dimensions';
 import {BottomBarIcons, bottomBarOptions} from '../BottomBarStack.constants';
 import {BlurView} from '@react-native-community/blur';
 import {map} from 'lodash';
@@ -67,12 +67,12 @@ const MyBottomBar: FC<BottomTabBarProps> = ({
 
   return (
     <RN.View style={styles.container}>
-      <BlurView
+      {/* <BlurView
         blurType="dark"
         blurAmount={10}
         reducedTransparencyFallbackColor="white"
         style={[RN.StyleSheet.absoluteFill, styles.blurView]}
-      />
+      /> */}
       {map(state.routes, renderItem)}
     </RN.View>
   );

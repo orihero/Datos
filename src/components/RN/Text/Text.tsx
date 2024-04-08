@@ -1,8 +1,9 @@
 import React, {FC} from 'react';
 import {Text as RNText, TextProps, View} from 'react-native';
 
-import {isNull, isUndefined, isString} from 'lodash';
-import {FontFamily, FontSize} from 'constants/fonts';
+import {isNull, isUndefined} from 'lodash';
+import {FontFamily, FontSize} from 'shared/constants/fonts';
+import {COLORS} from 'shared/constants/colors';
 
 type Props = {
   color?: string;
@@ -12,13 +13,13 @@ type Props = {
 
 const Text: FC<Props> = ({
   children,
-  color,
+  color = COLORS.black,
   font = 'Regular',
   size = 'h5',
   style,
   ...resOfProps
 }) => {
-  if (isUndefined(children) || isNull(children) || !isString(children)) {
+  if (isUndefined(children) || isNull(children)) {
     return <View />;
   }
 

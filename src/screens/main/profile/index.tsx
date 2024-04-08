@@ -1,9 +1,12 @@
-import RN from 'components/RN';
+import Container from 'components/Container';
+import React from 'react';
+import {ProfileDisplay, ProfileHeader, ProfileTab} from './ui';
 
 export default function ProfileScreen() {
   return (
-    <RN.View>
-      <RN.Text>ProfileScreen</RN.Text>
-    </RN.View>
+    <Container Header={<ProfileHeader />}>
+      <ProfileDisplay />
+      <ProfileTab />
+    </Container>
   );
 }

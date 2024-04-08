@@ -6,9 +6,10 @@ export const FontFamily = {
 };
 
 export const FontSize = {
-  h1: 28,
-  h2: 24,
-  h3: 20,
+  title: 28,
+  h1: 24,
+  h2: 20,
+  h3: 18,
   h4: 16,
   h5: 14,
   h6: 12,

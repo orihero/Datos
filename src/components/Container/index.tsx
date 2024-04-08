@@ -1,6 +1,6 @@
 import RN from 'components/RN';
-import {COLORS} from 'constants/colors';
-import {useAppViewInsets} from 'hooks/useAppViewInsets';
+import {COLORS} from 'shared/constants/colors';
+import {useAppViewInsets} from 'shared/hooks/useAppViewInsets';
 import React, {FC, PropsWithChildren, ReactNode} from 'react';
 
 interface ContainerProps extends PropsWithChildren {

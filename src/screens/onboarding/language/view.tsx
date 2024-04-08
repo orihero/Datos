@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import {Text, View} from 'react-native';
 import LanguageButton from './components/language-button';
-import { useOnboardingLanguageHooks } from './hooks';
-import { onboardingLanguageStyles } from './styles';
+import {useOnboardingLanguageHooks} from './hooks';
+import {onboardingLanguageStyles} from './styles';
+import {EnPngImage, RuPngImage, UzPngImage} from 'shared/assets/images';
 
 const OnboardingLanuageScreen = () => {
   const {onLanguagePress} = useOnboardingLanguageHooks();
@@ -13,17 +14,17 @@ const OnboardingLanuageScreen = () => {
         <LanguageButton
           onPress={onLanguagePress('en')}
           text="English"
-          image={require('../../../assets/images/en.png')}
+          image={EnPngImage}
         />
         <LanguageButton
           text="O'zbekcha"
           onPress={onLanguagePress('uz')}
-          image={require('../../../assets/images/uz.png')}
+          image={UzPngImage}
         />
         <LanguageButton
           text="Русскый"
           onPress={onLanguagePress('ru')}
-          image={require('../../../assets/images/ru.png')}
+          image={RuPngImage}
         />
       </View>
     </View>

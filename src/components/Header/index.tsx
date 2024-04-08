@@ -1,8 +1,9 @@
 import RN from 'components/RN';
-import {COLORS} from 'constants/colors';
-import {useAppViewInsets} from 'hooks/useAppViewInsets';
-import React, {FC, ReactNode} from 'react';
+import {COLORS} from 'shared/constants/colors';
+import {useAppViewInsets} from 'shared/hooks/useAppViewInsets';
+import React, {FC, ReactNode, useMemo} from 'react';
 import {StyleProp, ViewStyle} from 'react-native';
+import {normalizeHeight} from 'shared/utils/dimensions';
 
 interface HeaderProps {
   LeftHeader?: ReactNode;
@@ -11,8 +12,9 @@ interface HeaderProps {
 }
 const Header: FC<HeaderProps> = ({LeftHeader, RightHeader, containerStyle}) => {
   const {paddingTop} = useAppViewInsets();
+  const height = useMemo(() => normalizeHeight(90) + paddingTop, [paddingTop]);
   return (
-    <RN.View style={[styles.container, {paddingTop}, containerStyle]}>
+    <RN.View style={[styles.container, {paddingTop, height}, containerStyle]}>
       {LeftHeader}
       {RightHeader}
     </RN.View>
@@ -21,7 +23,6 @@ const Header: FC<HeaderProps> = ({LeftHeader, RightHeader, containerStyle}) => {
 
 const styles = RN.StyleSheet.create({
   container: {
-    height: 100,
     backgroundColor: COLORS.dargGray,
     paddingBottom: 15,
     borderBottomLeftRadius: 30,

@@ -7,11 +7,11 @@ import {
   ViewStyle,
 } from 'react-native';
 import React, {useEffect, useRef} from 'react';
-import {COLORS} from '../../../constants/colors';
+import {COLORS} from '../../../shared/constants/colors';
 import {splashStyles} from './styles';
 import {useNavigation} from '@react-navigation/native';
-import {ONBOARDING_STACK, ROUTES} from 'navigation/navigators/routes';
-import {OnbardingStackProps} from 'navigation/navigators/OnboardingStack';
+import {ONBOARDING_STACK, ROUTES} from 'shared/navigation/navigators/routes';
+import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
 
 const {width: wWidth, height: wHeight} = Dimensions.get('screen');
 
