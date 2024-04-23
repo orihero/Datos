@@ -22,9 +22,7 @@ export type RegisterStackScreenProps<T extends keyof RegisterStackParamList> =
 const Stack = createNativeStackNavigator<RegisterStackParamList>();
 
 const RegisterStack = () => (
-  <Stack.Navigator
-    screenOptions={{headerShown: false}}
-    initialRouteName={REGISTER_STACK.SET_UP}>
+  <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name={REGISTER_STACK.LOG_IN} component={LoginScreen} />
     <Stack.Screen name={REGISTER_STACK.CONFIRM} component={ConfirmCodeScreen} />
     <Stack.Screen name={REGISTER_STACK.SET_UP} component={SetupScreen} />

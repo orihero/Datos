@@ -1,4 +1,3 @@
-import {firebase} from '@react-native-firebase/auth';
 import {useRoute} from '@react-navigation/native';
 import {Button} from 'components/Button';
 import {CheckboxButton} from 'components/CheckboxButton';
@@ -23,10 +22,10 @@ import {pickImageFromDevice} from 'shared/utils/image-picker';
 
 function SetupScreen() {
   const {paddingBottom} = useAppViewInsets();
-  const {state, onChangeOfSetup, onSetUpFinish} = useRegister();
+  const {state, onChangeOfSetup, onSetUpFinish, loadingWhenOnFinish} =
+    useRegister();
   const imageUploadLoading = useVisibility();
-  // const params = useRoute().params as {uid: string};
-  // console.log('user id:', params.uid);
+  const params = useRoute().params as {uid: string};
 
   const {firstName, lastName, neckname, userImageUrl, gender} = state.setup;
   const buttonDisabled = !(firstName && lastName && neckname);
@@ -65,7 +64,8 @@ function SetupScreen() {
             <Button
               title="Finish"
               disabled={buttonDisabled}
-              onPress={() => onSetUpFinish('kUszOZKmZFQfL0f4x7BuTmpl6wI3')}
+              loading={loadingWhenOnFinish.loading}
+              onPress={() => onSetUpFinish(params.uid)}
             />
             <Spacing height={paddingBottom} />
           </RN.View>

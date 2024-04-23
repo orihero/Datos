@@ -5,7 +5,7 @@ import RegisterApi from 'shared/api/register.api';
 import {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import Loading from 'shared/utils/Loading';
 import NavigationService from 'shared/navigation/NavigationService';
-import {REGISTER_STACK} from 'shared/navigation/routes';
+import {REGISTER_STACK, ROOT_STACK} from 'shared/navigation/routes';
 import UsersApi from 'shared/api/users.api';
 
 export interface RegisterStoreState {
@@ -47,6 +47,7 @@ export default class RegisterStore {
   private confirmResult: FirebaseAuthTypes.ConfirmationResult | null = null;
   loadingWhenLogIn: Loading = new Loading();
   loadingWhenConfirm: Loading = new Loading();
+  loadingWhenOnFinish: Loading = new Loading();
 
   // Root Store
   private readonly rootStore: RootStore;
@@ -146,10 +147,14 @@ export default class RegisterStore {
       }
 
       // Check if the user is new or existing
-      const userDocument = await UsersApi.collection.doc(user.uid).get();
+      const querySnapshot = await UsersApi.collection
+        .where('_id', '==', user.uid)
+        .get();
 
-      if (userDocument.exists) {
+      if (querySnapshot.docs[0].exists) {
         // the user is existed || navigate to HomeScreen
+        NavigationService.navigate(ROOT_STACK.HOME);
+        this.rootStore.local.setUserId(user.uid);
       } else {
         // the user is new || navigate to SetupScreen
         setTimeout(() => {
@@ -171,10 +176,17 @@ export default class RegisterStore {
       _id,
     };
     try {
+      this.loadingWhenOnFinish.show();
       await UsersApi.addUser(newUser);
-      console.log('new user is created.!');
+      this.rootStore.local.setUserId(_id);
+      setTimeout(() => {
+        NavigationService.navigate(ROOT_STACK.HOME);
+        this.loadingWhenOnFinish.hide();
+      }, 400);
     } catch (err) {
       console.log(['[Error-onSetUpFinish]:', err]);
+    } finally {
+      setTimeout(() => this.loadingWhenOnFinish.hide, 2000);
     }
   };
 }
