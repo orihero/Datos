@@ -4,16 +4,14 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import React from 'react';
-import {ROUTES} from './routes';
+import {ONBOARDING_STACK} from './routes';
 import SplashScreen from 'screens/onboarding/splash';
 import OnboardingLanuageScreen from 'screens/onboarding/language';
-import OnboardingStepsScreen from 'screens/onboarding/steps';
 import {RootStackParamList, RootStackScreenProps} from './MainStack';
 
 export type OnbordingStackParamList = {
-  [ROUTES.ONBARDING.SPLASH]: undefined;
-  [ROUTES.ONBARDING.ONBOARDING_LANGUAGE]: undefined;
-  [ROUTES.ONBARDING.ONBOARDING_STEPS]: undefined;
+  [ONBOARDING_STACK.SPLASH]: undefined;
+  [ONBOARDING_STACK.ONBOARDING_LANGUAGE]: undefined;
 };
 
 export type OnbardingStackProps<T extends keyof OnbordingStackParamList> =
@@ -24,21 +22,15 @@ export type OnbardingStackProps<T extends keyof OnbordingStackParamList> =
 
 const Stack = createNativeStackNavigator<OnbordingStackParamList>();
 
-const OnboardingStack = () => {
-  return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name={ROUTES.ONBARDING.SPLASH} component={SplashScreen} />
-      <Stack.Screen
-        name={ROUTES.ONBARDING.ONBOARDING_LANGUAGE}
-        component={OnboardingLanuageScreen}
-        options={{animation: 'none'}}
-      />
-      <Stack.Screen
-        name={ROUTES.ONBARDING.ONBOARDING_STEPS}
-        component={OnboardingStepsScreen}
-      />
-    </Stack.Navigator>
-  );
-};
+const OnboardingStack = () => (
+  <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Screen name={ONBOARDING_STACK.SPLASH} component={SplashScreen} />
+    <Stack.Screen
+      name={ONBOARDING_STACK.ONBOARDING_LANGUAGE}
+      component={OnboardingLanuageScreen}
+      options={{animation: 'none'}}
+    />
+  </Stack.Navigator>
+);
 
 export default OnboardingStack;

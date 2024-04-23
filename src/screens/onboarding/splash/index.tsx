@@ -1,23 +1,17 @@
-import {
-  Animated,
-  Dimensions,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import React, {useEffect, useRef} from 'react';
-import {COLORS} from '../../../shared/constants/colors';
-import {splashStyles} from './styles';
 import {useNavigation} from '@react-navigation/native';
-import {ONBOARDING_STACK, ROUTES} from 'shared/navigation/navigators/routes';
+import RN from 'components/RN';
+import React, {useEffect, useRef} from 'react';
+import {Animated, TextStyle, ViewStyle} from 'react-native';
 import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
+import {ONBOARDING_STACK} from 'shared/navigation/navigators/routes';
+import {COLORS} from '../../../shared/constants/colors';
+import {SIZES} from 'shared/utils/dimensions';
 
-const {width: wWidth, height: wHeight} = Dimensions.get('screen');
+const {width: wWidth, height: wHeight} = SIZES;
 
 const SplashScreen = () => {
   const animationValue = useRef(new Animated.Value(0)).current;
-  ROUTES.ONBARDING.SPLASH;
+  ONBOARDING_STACK.SPLASH;
   const navigation =
     useNavigation<
       OnbardingStackProps<ONBOARDING_STACK.ONBOARDING_STEPS>['navigation']
@@ -116,7 +110,7 @@ const SplashScreen = () => {
         }).start(
           i === 4
             ? () => {
-                navigation.navigate(ROUTES.ONBARDING.ONBOARDING_LANGUAGE);
+                navigation.navigate(ONBOARDING_STACK.ONBOARDING_LANGUAGE);
               }
             : undefined,
         );
@@ -127,20 +121,35 @@ const SplashScreen = () => {
   const {text, view} = animationInterpolationMapper(animationValue);
 
   return (
-    <View style={splashStyles.container}>
-      <Animated.View style={{...text}}>
-        <Text numberOfLines={1} ellipsizeMode="clip" style={splashStyles.text}>
+    <RN.View style={splashStyles.container}>
+      <RN.Animated.View style={{...text}}>
+        <RN.Text
+          numberOfLines={1}
+          ellipsizeMode="clip"
+          style={splashStyles.text}>
           DATOS
-        </Text>
-      </Animated.View>
-      <Animated.View
+        </RN.Text>
+      </RN.Animated.View>
+      <RN.Animated.View
         style={{
           backgroundColor: COLORS.blue,
           ...view,
         }}
       />
-    </View>
+    </RN.View>
   );
 };
+
+export const splashStyles = RN.StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.black,
+  },
+  text: {
+    fontFamily: 'NicoMoji-Regular',
+    color: COLORS.white,
+    fontSize: 50,
+  },
+});
 
 export default SplashScreen;
