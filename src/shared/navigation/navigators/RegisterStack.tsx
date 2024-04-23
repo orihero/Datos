@@ -1,5 +1,5 @@
 import React from 'react';
-import {REGISTER_STACK} from './routes';
+import {REGISTER_STACK} from '../routes';
 import {
   NativeStackScreenProps,
   createNativeStackNavigator,
@@ -12,7 +12,7 @@ export type RegisterStackParamList = {
   [REGISTER_STACK.LOG_IN]: undefined;
   [REGISTER_STACK.CONFIRM]: undefined;
   [REGISTER_STACK.SET_UP]: {
-    id: string;
+    uid: string;
   };
 };
 
@@ -22,7 +22,9 @@ export type RegisterStackScreenProps<T extends keyof RegisterStackParamList> =
 const Stack = createNativeStackNavigator<RegisterStackParamList>();
 
 const RegisterStack = () => (
-  <Stack.Navigator screenOptions={{headerShown: false}}>
+  <Stack.Navigator
+    screenOptions={{headerShown: false}}
+    initialRouteName={REGISTER_STACK.SET_UP}>
     <Stack.Screen name={REGISTER_STACK.LOG_IN} component={LoginScreen} />
     <Stack.Screen name={REGISTER_STACK.CONFIRM} component={ConfirmCodeScreen} />
     <Stack.Screen name={REGISTER_STACK.SET_UP} component={SetupScreen} />

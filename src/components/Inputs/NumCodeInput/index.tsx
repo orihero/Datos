@@ -15,7 +15,6 @@ import {
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 import {COLORS} from 'shared/constants/colors';
-import {addAlpha} from 'shared/utils/color';
 
 const CELL_COUNT = 6;
 

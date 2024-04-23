@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import RNPhoneInput, {ICountry} from 'react-native-international-phone-number';
 import ArrowDownIcon from 'shared/assets/icons/ArrowDownIcon';
 import {addAlpha} from 'shared/utils/color';
@@ -7,26 +7,26 @@ import {FontFamily} from 'shared/constants/fonts';
 import CrossRedCircleSmallIcon from 'shared/assets/icons/CrossRedCircleSmallIcon';
 import RN from 'components/RN';
 
-export interface PhoneInputProps {}
+export interface PhoneInputProps {
+  selectedCountry: ICountry | null;
+  inputValue: string;
+  onChangeInputValue(value: string): void;
+  onChangeCountry(country: ICountry): void;
+}
 
-export const PhoneInput: FC<PhoneInputProps> = ({}) => {
-  const [selectedCountry, setSelectedCountry] = useState<null | ICountry>(null);
-  const [inputValue, setInputValue] = useState<string>('');
-
-  function handleInputValue(phoneNumber: string) {
-    setInputValue(phoneNumber);
-  }
-
-  function handleSelectedCountry(country: ICountry) {
-    setSelectedCountry(country);
-  }
+export const PhoneInput: FC<PhoneInputProps> = ({
+  selectedCountry,
+  inputValue,
+  onChangeCountry,
+  onChangeInputValue,
+}) => {
   return (
     <RN.View>
       <RNPhoneInput
         value={inputValue}
-        onChangePhoneNumber={handleInputValue}
+        onChangePhoneNumber={onChangeInputValue}
         selectedCountry={selectedCountry}
-        onChangeSelectedCountry={handleSelectedCountry}
+        onChangeSelectedCountry={onChangeCountry}
         placeholderTextColor={addAlpha(COLORS.black, 0.6)}
         defaultCountry="UZ"
         customCaret={<ArrowDownIcon color={COLORS.black} size={22} />}
@@ -46,7 +46,7 @@ export const PhoneInput: FC<PhoneInputProps> = ({}) => {
 
       {!!inputValue && (
         <RN.TouchableOpacity
-          onPress={() => setInputValue('')}
+          onPress={() => onChangeInputValue('')}
           activeOpacity={0.5}
           style={styles.crossIcon}>
           <CrossRedCircleSmallIcon color={COLORS.black} size={22} />

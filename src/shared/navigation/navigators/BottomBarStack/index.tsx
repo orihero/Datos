@@ -1,6 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {BOTTOM_BAR_STACK} from '../routes';
+import {BOTTOM_BAR_STACK} from '../../routes';
 import {bottomBarOptions} from './BottomBarStack.constants';
 import MyBottomBar from './components/MyBottomBar';
 import ProfileScreen from 'screens/main/profile';

@@ -3,7 +3,7 @@ import RN from 'components/RN';
 import React, {useEffect, useRef} from 'react';
 import {Animated, TextStyle, ViewStyle} from 'react-native';
 import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
-import {ONBOARDING_STACK} from 'shared/navigation/navigators/routes';
+import {ONBOARDING_STACK} from 'shared/navigation/routes';
 import {COLORS} from '../../../shared/constants/colors';
 import {SIZES} from 'shared/utils/dimensions';
 

@@ -1,7 +1,7 @@
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import RN from 'components/RN';
 import {COLORS} from 'shared/constants/colors';
-import {BOTTOM_BAR_STACK} from 'shared/navigation/navigators/routes';
+import {BOTTOM_BAR_STACK} from 'shared/navigation/routes';
 import React, {FC} from 'react';
 import {addAlpha} from 'shared/utils/color';
 import {SIZES} from 'shared/utils/dimensions';

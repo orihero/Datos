@@ -4,7 +4,7 @@ import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import {ROOT_STACK} from './routes';
+import {ROOT_STACK} from '../routes';
 import OnboardingStack, {OnbordingStackParamList} from './OnboardingStack';
 import BottomBarStack from './BottomBarStack';
 import RegisterStack from './RegisterStack';

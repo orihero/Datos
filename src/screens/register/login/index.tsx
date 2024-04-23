@@ -3,12 +3,19 @@ import Container from 'components/Container';
 import {PhoneInput} from 'components/Inputs/PhoneInput';
 import RN from 'components/RN';
 import {Spacing} from 'components/Spacing';
+import {observer} from 'mobx-react-lite';
 import React from 'react';
 import {COLORS} from 'shared/constants/colors';
 import {FontFamily} from 'shared/constants/fonts';
+import {useRegister} from 'shared/store/hooks/useRegister';
 import {addAlpha} from 'shared/utils/color';
 
-export default function LoginScreen() {
+function LoginScreen() {
+  const {state, onChangeOfLogin, onLoginWithPhone, loadingWhenLogIn} =
+    useRegister();
+
+  const inputValue = state.login.input;
+  const disabledButton = !inputValue;
   return (
     <Container background={COLORS.white} isPaddingTop>
       <RN.View style={styles.container}>
@@ -16,9 +23,19 @@ export default function LoginScreen() {
           Enter your mobile number!
         </RN.Text>
         <Spacing steps={2} />
-        <PhoneInput />
+        <PhoneInput
+          inputValue={inputValue}
+          selectedCountry={state.login.country}
+          onChangeCountry={country => onChangeOfLogin('country', country)}
+          onChangeInputValue={input => onChangeOfLogin('input', input)}
+        />
         <Spacing steps={4} />
-        <Button title="Log In" />
+        <Button
+          title="Log In"
+          onPress={onLoginWithPhone}
+          disabled={disabledButton}
+          loading={loadingWhenLogIn.loading}
+        />
       </RN.View>
     </Container>
   );
@@ -41,3 +58,5 @@ const styles = RN.StyleSheet.create({
     borderRadius: 4,
   },
 });
+
+export default observer(LoginScreen);

@@ -3,13 +3,21 @@ import Container from 'components/Container';
 import NumbericCodeEnterInput from 'components/Inputs/NumCodeInput';
 import RN from 'components/RN';
 import {Spacing} from 'components/Spacing';
-import React, {useState} from 'react';
+import {observer} from 'mobx-react-lite';
+import React from 'react';
 import {COLORS} from 'shared/constants/colors';
 import {FontFamily} from 'shared/constants/fonts';
+import {useRegister} from 'shared/store/hooks/useRegister';
 import {addAlpha} from 'shared/utils/color';
-
-export default function ConfirmCodeScreen() {
-  const [code, setCode] = useState('');
+function ConfirmCodeScreen() {
+  const {
+    state,
+    onLoginWithPhoneConfirm,
+    onChangeCodeOfConfirm,
+    loadingWhenConfirm,
+  } = useRegister();
+  const codeValue = state.confirmCode.code;
+  const disabledButton = !!codeValue && codeValue.length === 6;
   return (
     <Container background={COLORS.white} isPaddingTop>
       <RN.View style={styles.container}>
@@ -19,11 +27,16 @@ export default function ConfirmCodeScreen() {
         <Spacing steps={2} />
         <NumbericCodeEnterInput
           cellCount={6}
-          code={code}
-          changeCode={setCode}
+          code={codeValue}
+          changeCode={onChangeCodeOfConfirm}
         />
         <Spacing steps={4} />
-        <Button title="Confirm" />
+        <Button
+          title="Confirm"
+          disabled={!disabledButton}
+          loading={loadingWhenConfirm.loading}
+          onPress={onLoginWithPhoneConfirm}
+        />
       </RN.View>
     </Container>
   );
@@ -46,3 +59,5 @@ const styles = RN.StyleSheet.create({
     borderRadius: 4,
   },
 });
+
+export default observer(ConfirmCodeScreen);

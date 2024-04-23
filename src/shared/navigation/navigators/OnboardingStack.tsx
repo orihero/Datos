@@ -4,7 +4,7 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import React from 'react';
-import {ONBOARDING_STACK} from './routes';
+import {ONBOARDING_STACK} from '../routes';
 import SplashScreen from 'screens/onboarding/splash';
 import OnboardingLanuageScreen from 'screens/onboarding/language';
 import {RootStackParamList, RootStackScreenProps} from './MainStack';
