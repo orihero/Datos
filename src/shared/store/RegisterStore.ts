@@ -151,7 +151,8 @@ export default class RegisterStore {
         .where('_id', '==', user.uid)
         .get();
 
-      if (querySnapshot.docs[0].exists) {
+      if (querySnapshot && querySnapshot?.docs[0]?.exists) {
+        // it's not good solution, need to improve it
         // the user is existed || navigate to HomeScreen
         NavigationService.navigate(ROOT_STACK.HOME);
         this.rootStore.local.setUserId(user.uid);
