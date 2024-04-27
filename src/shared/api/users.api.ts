@@ -1,4 +1,6 @@
-import firestore from '@react-native-firebase/firestore';
+import firestore, {
+  FirebaseFirestoreTypes,
+} from '@react-native-firebase/firestore';
 import {User} from '@types';
 
 export default class UsersApi {
@@ -12,4 +14,21 @@ export default class UsersApi {
 
   static deleteUser = async (userId: string) =>
     this.collection.doc(userId).delete();
+
+  static getUser = async (userId: string) => {
+    let result: FirebaseFirestoreTypes.DocumentData | null = null;
+
+    try {
+      const querySnapshot = await UsersApi.collection
+        .where('_id', '==', userId)
+        .get();
+      if (querySnapshot && !querySnapshot.empty && querySnapshot.size === 1) {
+        result = querySnapshot.docs[0].data();
+      }
+    } catch (err) {
+      console.log('[Error-getUser]:', err);
+    }
+
+    return result;
+  };
 }

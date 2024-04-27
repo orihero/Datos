@@ -1,12 +1,18 @@
 import Container from 'components/Container';
 import React from 'react';
 import {ProfileDisplay, ProfileHeader, ProfileTab} from './ui';
+import {useUser} from 'shared/store/hooks/useUser';
+import {observer} from 'mobx-react-lite';
 
-export default function ProfileScreen() {
+function ProfileScreen() {
+  const {user} = useUser();
+
   return (
     <Container Header={<ProfileHeader />}>
-      <ProfileDisplay />
+      <ProfileDisplay {...user} />
       <ProfileTab />
     </Container>
   );
 }
+
+export default observer(ProfileScreen);

@@ -23,6 +23,7 @@
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
+    "date-fns": "^3.6.0",
     "lodash": "^4.17.21",
     "lottie-react-native": "^6.6.0",
     "mobx": "^6.12.3",

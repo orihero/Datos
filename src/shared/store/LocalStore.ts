@@ -12,7 +12,6 @@ export default class LocalStore {
 
   getValuesFromDB = () => {
     const id = storage.getString('userId');
-    console.log({id});
     if (id) {
       this.setUserId(id);
     }

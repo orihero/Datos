@@ -147,11 +147,8 @@ export default class RegisterStore {
       }
 
       // Check if the user is new or existing
-      const querySnapshot = await UsersApi.collection
-        .where('_id', '==', user.uid)
-        .get();
-
-      if (querySnapshot && querySnapshot?.docs[0]?.exists) {
+      const currentUser = await UsersApi.getUser(user.uid);
+      if (currentUser) {
         // it's not good solution, need to improve it
         // the user is existed || navigate to HomeScreen
         NavigationService.navigate(ROOT_STACK.HOME);
