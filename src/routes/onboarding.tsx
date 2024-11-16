@@ -26,7 +26,9 @@ const Stack = createNativeStackNavigator<OnbordingStackParamList>();
 
 const OnboardingStack = () => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator
+      screenOptions={{headerShown: false}}
+      initialRouteName={ROUTES.ONBARDING.ONBOARDING_STEPS}>
       <Stack.Screen name={ROUTES.ONBARDING.SPLASH} component={SplashScreen} />
       <Stack.Screen
         name={ROUTES.ONBARDING.ONBOARDING_LANGUAGE}
