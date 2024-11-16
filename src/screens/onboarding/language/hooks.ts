@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {STRINGS} from '../../../localization/strings';
-import {OnbardingStackProps} from '../../../routes/onboarding';
-import {ONBOARDING_STACK, ROUTES} from '../../../routes/routes';
+import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
+import {ONBOARDING_STACK, ROOT_STACK} from 'shared/navigation/routes';
 
 export const useOnboardingLanguageHooks = () => {
   const navigation =
@@ -11,7 +11,7 @@ export const useOnboardingLanguageHooks = () => {
 
   const onLanguagePress = (key: string) => () => {
     STRINGS.setLanguage(key);
-    navigation.navigate(ROUTES.ONBARDING.ONBOARDING_STEPS);
+    navigation.navigate(ROOT_STACK.AUTH);
   };
 
   return {onLanguagePress};

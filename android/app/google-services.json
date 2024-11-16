@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1042709637721-ol0vchs1et6upcr659dif3np4ffeebvq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.datos.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
           "client_id": "1042709637721-ffg97tuir6ihlsa8t7ujqnesh9mckvgh.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "1042709637721-ffg97tuir6ihlsa8t7ujqnesh9mckvgh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1042709637721-jtdvh8r03gnkipm7p95ef6lmqblad2fa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.uz.datos.app"
+              }
             }
           ]
         }
