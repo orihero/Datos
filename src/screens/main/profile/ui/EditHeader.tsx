@@ -2,15 +2,15 @@ import Header from 'components/Header';
 import RN from 'components/RN';
 import React from 'react';
 import ArrowLeftIcon from 'shared/assets/icons/ArrowLeftIcon';
-import SettingsIcon from 'shared/assets/icons/SettingsIcon';
-import ChatIcon from 'shared/assets/icons/ChatIcon';
+import LogoutIcon from 'shared/assets/icons/LogoutIcon';
 import {COLORS} from 'shared/constants/colors';
 import {normalizeWidth} from 'shared/utils/dimensions';
 import {useNavigation} from '@react-navigation/native';
-import {HOME_STACK} from 'shared/navigation/routes';
+import {useRegister} from 'shared/store/hooks/useRegister';
 
 export default () => {
-  const {goBack, navigate} = useNavigation();
+  const {goBack} = useNavigation();
+  const {onSignOut} = useRegister();
 
   return (
     <Header
@@ -23,16 +23,9 @@ export default () => {
         </RN.View>
       }
       RightHeader={
-        <RN.View fd={'row'} ai={'center'} g={11}>
-          <RN.TouchableOpacity style={styles.iconButton}>
-            <ChatIcon size={24} color={COLORS.white} />
-          </RN.TouchableOpacity>
-          <RN.TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => navigate(HOME_STACK.PROFILE_SETTINGS as never)}>
-            <SettingsIcon size={24} color={COLORS.white} />
-          </RN.TouchableOpacity>
-        </RN.View>
+        <RN.TouchableOpacity style={styles.iconButton} onPress={onSignOut}>
+          <LogoutIcon size={24} color={COLORS.white} />
+        </RN.TouchableOpacity>
       }
     />
   );

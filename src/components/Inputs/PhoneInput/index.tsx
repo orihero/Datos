@@ -24,12 +24,13 @@ export const PhoneInput: FC<PhoneInputProps> = ({
     <RN.View>
       <RNPhoneInput
         value={inputValue}
+        modalDisabled
         onChangePhoneNumber={onChangeInputValue}
         selectedCountry={selectedCountry}
         onChangeSelectedCountry={onChangeCountry}
         placeholderTextColor={addAlpha(COLORS.black, 0.6)}
         defaultCountry="UZ"
-        customCaret={<ArrowDownIcon color={COLORS.black} size={22} />}
+        customCaret={<ArrowDownIcon size={0} color={COLORS.transparent} />}
         placeholder="Enter number!"
         modalStyles={{
           searchInput: styles.input,
@@ -60,7 +61,7 @@ const styles = RN.StyleSheet.create({
   container: {
     borderWidth: 0,
     overflow: 'visible',
-    columnGap: 8,
+    // columnGap: 8,
   },
   crossIcon: {
     position: 'absolute',
@@ -73,7 +74,7 @@ const styles = RN.StyleSheet.create({
     fontSize: 16,
     color: COLORS.black,
     paddingLeft: 26,
-    paddingRight: 10,
+    paddingRight: 1,
     zIndex: 1,
     lineHeight: 18,
   },
@@ -82,11 +83,12 @@ const styles = RN.StyleSheet.create({
     fontSize: 16,
     color: COLORS.black,
     paddingVertical: 15,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
-    borderWidth: 1,
+    paddingHorizontal: 1,
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
     borderColor: addAlpha(COLORS.black, 0.2),
     backgroundColor: COLORS.white,
   },
@@ -101,16 +103,14 @@ const styles = RN.StyleSheet.create({
   flagContainer: {
     paddingVertical: 15,
     paddingHorizontal: 16,
-    borderRadius: 16,
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderLeftWidth: 1,
     borderColor: addAlpha(COLORS.black, 0.2),
     backgroundColor: COLORS.white,
     zIndex: 2,
   },
   codeContainer: {},
-  arrowDown: {
-    zIndex: 2,
-  },
 });

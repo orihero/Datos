@@ -1,10 +1,10 @@
-import React, { PropsWithChildren, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import React, {PropsWithChildren, useEffect} from 'react';
+import {StyleSheet} from 'react-native';
 import Animated, {
   interpolate,
   useSharedValue,
   withSpring,
-  withTiming
+  withTiming,
 } from 'react-native-reanimated';
 
 export interface FadeInOutProps {
@@ -30,7 +30,6 @@ const FadeInOut = ({
       val.value = withSpring(DIRECTION_VALUE * INITIAL_OFFSET); // hide completely when unmounted
     };
   }, []);
-  console.log(opacity);
 
   return (
     <Animated.View

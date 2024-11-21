@@ -1,34 +1,22 @@
 import {User} from '@types';
+import {TextInput} from 'components/Inputs/TextInput';
 import RN from 'components/RN';
 import {Spacing} from 'components/Spacing';
 import React, {useMemo} from 'react';
 import {ActivityIndicator} from 'react-native';
+import CameraIcon from 'shared/assets/icons/CameraIcon';
 import {COLORS} from 'shared/constants/colors';
 import {FontFamily} from 'shared/constants/fonts';
-import {convertToShortDate} from 'shared/utils/date';
-import {normalizeHeight} from 'shared/utils/dimensions';
+import {useUser} from 'shared/store/hooks/useUser';
+import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 
 const floatViewHeight = normalizeHeight(132);
 
-export default ({
-  firstName,
-  lastName,
-  nickname,
-  userImageUrl,
-  createAt,
-}: User) => {
-  const fullName = useMemo(
-    () => `${firstName} ${lastName}`,
-    [firstName, lastName],
-  );
+export default ({firstName, lastName, nickname, userImageUrl}: User) => {
+  const {updateUser} = useUser();
   const isLoading = useMemo(
     () => !firstName || !lastName || !nickname || !userImageUrl,
     [firstName, lastName, nickname, userImageUrl],
-  );
-
-  const date = useMemo(
-    () => convertToShortDate(createAt ? createAt : Date.now()),
-    [createAt],
   );
 
   return (
@@ -41,25 +29,31 @@ export default ({
           ) : (
             <>
               <RN.Image source={{uri: userImageUrl!}} style={styles.image} />
-              <Spacing height={10} />
-              <RN.Text children={fullName} size="title" font="Medium" />
-              <RN.Text children={`@${nickname}`} size="h3" />
+              <RN.TouchableOpacity style={styles.iconButton}>
+                <CameraIcon size={32} color={COLORS.white} />
+              </RN.TouchableOpacity>
             </>
           )}
         </RN.View>
-        <RN.View style={styles.floatFooter}>
-          <RN.View style={styles.item}>
-            <RN.Text children="Followers" style={styles.lightSubTitle} />
-            <RN.Text children="894" style={styles.subTitle} />
-          </RN.View>
-          <RN.View style={styles.item}>
-            <RN.Text children="Folowing" style={styles.lightSubTitle} />
-            <RN.Text children="542" style={styles.subTitle} />
-          </RN.View>
-          <RN.View style={styles.item}>
-            <RN.Text children="Since" style={styles.lightSubTitle} />
-            <RN.Text children={date && date} style={styles.subTitle} />
-          </RN.View>
+        <Spacing height={20} />
+        <RN.View>
+          <TextInput
+            onChangeText={() => {}}
+            value={firstName}
+            inputStyle={styles.input}
+          />
+          <Spacing height={10} />
+          <TextInput
+            onChangeText={() => {}}
+            value={lastName}
+            inputStyle={styles.input}
+          />
+          <Spacing height={10} />
+          <TextInput
+            onChangeText={() => {}}
+            value={nickname}
+            inputStyle={styles.input}
+          />
         </RN.View>
       </RN.View>
     </>
@@ -75,10 +69,11 @@ const styles = RN.StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: 124,
-    height: 124,
+    width: 150,
+    height: 150,
     resizeMode: 'contain',
     borderRadius: 100,
+    position: 'absolute',
   },
   floatFooter: {
     position: 'absolute',
@@ -105,5 +100,20 @@ const styles = RN.StyleSheet.create({
     fontSize: 16,
     fontFamily: FontFamily.Medium,
     color: COLORS.white,
+  },
+  iconButton: {
+    backgroundColor: COLORS.lightGray2,
+    width: normalizeWidth(54),
+    aspectRatio: 1,
+    borderRadius: 27,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: COLORS.lightGray,
+    color: COLORS.white,
+    padding: 10,
+    borderRadius: 20,
   },
 });

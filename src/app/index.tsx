@@ -1,3 +1,4 @@
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {NavigationContainer} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -13,6 +14,12 @@ const App = () => {
   useEffect(() => {
     local.getValuesFromDB();
   }, [local]);
+
+  GoogleSignin.configure({
+    webClientId:
+      '1042709637721-ai9hlsit7f18skuu5blsj9i7u9dbtg4l.apps.googleusercontent.com',
+  });
+
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={CoreStyle.flex1}>

@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import {Text, View} from 'react-native';
 import FadeInOut from '../../../components/animations/fade-in-out';
 import LanguageButton from './components/language-button';
-import { useOnboardingLanguageHooks } from './hooks';
-import { onboardingLanguageStyles } from './styles';
+import {useOnboardingLanguageHooks} from './hooks';
+import {onboardingLanguageStyles} from './styles';
+import {EnPngImage, RuPngImage, UzPngImage} from 'shared/assets/images';
 
 const OnboardingLanuageScreen = () => {
   const {onLanguagePress} = useOnboardingLanguageHooks();
@@ -16,21 +17,21 @@ const OnboardingLanuageScreen = () => {
           <LanguageButton
             onPress={onLanguagePress('en')}
             text="English"
-            image={require('../../../assets/images/en.png')}
+            image={EnPngImage}
           />
         </FadeInOut>
         <FadeInOut direction="left">
           <LanguageButton
             text="O'zbekcha"
             onPress={onLanguagePress('uz')}
-            image={require('../../../assets/images/uz.png')}
+            image={UzPngImage}
           />
         </FadeInOut>
         <FadeInOut direction="right">
           <LanguageButton
             text="Русскый"
             onPress={onLanguagePress('ru')}
-            image={require('../../../assets/images/ru.png')}
+            image={RuPngImage}
           />
         </FadeInOut>
       </View>

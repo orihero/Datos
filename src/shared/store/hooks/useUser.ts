@@ -21,11 +21,29 @@ export const useUser = () => {
     }
   }, [userId]);
 
+  const updateUser = useCallback(
+    async (newData: Partial<User>) => {
+      if (!userId) {
+        return;
+      }
+      try {
+        const updatedUser = await UsersApi.updateUser(userId, newData);
+        if (updatedUser) {
+          setUser(updatedUser as User);
+        }
+      } catch (err) {
+        console.log('Error-updateUser', err);
+      }
+    },
+    [userId],
+  );
+
   useEffect(() => {
     getUserInfo();
   }, [getUserInfo]);
 
   return {
     user,
+    updateUser,
   };
 };

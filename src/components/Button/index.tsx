@@ -9,36 +9,63 @@ export function Button({
   onPress,
   disabled = false,
   loading = false,
+  icon,
+  outline,
 }: {
   title: string;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  icon?: React.ReactNode;
+  outline?: boolean;
 }) {
   return (
     <RN.TouchableOpacity
       disabled={disabled || loading}
       onPress={onPress}
       activeOpacity={0.5}
-      style={[styles.button, disabled && styles.buttonDisabled]}>
+      style={[
+        styles.button,
+        disabled && styles.buttonDisabled,
+        outline ? styles.buttonOutline : styles.buttonPrimary,
+      ]}>
       {loading ? (
-        <ActivityIndicator size="small" color={COLORS.white} />
+        <ActivityIndicator
+          size="small"
+          color={outline ? COLORS.blue : COLORS.white}
+        />
       ) : (
-        <RN.Text style={styles.buttonText}>{title}</RN.Text>
+        <RN.Text
+          style={[
+            styles.buttonText,
+            {color: outline ? COLORS.blue : COLORS.white},
+          ]}>
+          {title}
+        </RN.Text>
       )}
+      {icon && !loading && icon}
     </RN.TouchableOpacity>
   );
 }
 
 const styles = RN.StyleSheet.create({
   button: {
-    backgroundColor: COLORS.blue,
+    flexDirection: 'row',
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 12,
     borderRadius: 16,
     height: 50,
+    gap: 10,
+  },
+  buttonPrimary: {
+    backgroundColor: COLORS.blue,
+  },
+  buttonOutline: {
+    backgroundColor: COLORS.transparent,
+    borderWidth: 1,
+    borderColor: COLORS.blue,
   },
   buttonDisabled: {
     opacity: 0.4,

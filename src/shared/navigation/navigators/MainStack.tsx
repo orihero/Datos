@@ -4,12 +4,15 @@ import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import {ROOT_STACK} from '../routes';
+import {HOME_STACK, ROOT_STACK} from '../routes';
 import OnboardingStack, {OnbordingStackParamList} from './OnboardingStack';
 import BottomBarStack from './BottomBarStack';
 import RegisterStack from './RegisterStack';
 import {observer} from 'mobx-react-lite';
 import {useLocalStore} from 'shared/store/hooks/useLocalStore';
+import AnswearScreen from 'screens/main/answear';
+import CreateQuestion from 'screens/main/createQuestion';
+import ProfileSettings from 'screens/main/profile/Settings';
 
 export type RootStackParamList = {
   [ROOT_STACK.ONBOARDING]: NavigatorScreenParams<OnbordingStackParamList>;
@@ -27,7 +30,21 @@ const MainStack = () => {
   const isAuthenticated = !!userId;
 
   const renderPrivateStacks = () => (
-    <Stack.Screen name={ROOT_STACK.HOME} component={BottomBarStack} />
+    <>
+      <Stack.Screen name={ROOT_STACK.HOME} component={BottomBarStack} />
+      <Stack.Screen
+        name={HOME_STACK.ANSWEAR as never}
+        component={AnswearScreen}
+      />
+      <Stack.Screen
+        name={HOME_STACK.CREATE_QUESTION as never}
+        component={CreateQuestion}
+      />
+      <Stack.Screen
+        name={HOME_STACK.PROFILE_SETTINGS as never}
+        component={ProfileSettings}
+      />
+    </>
   );
 
   const renderPublicStack = () => (

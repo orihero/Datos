@@ -1,17 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import RN from 'components/RN';
-import React, {FC} from 'react';
+import React from 'react';
 import ArrowDownIcon from 'shared/assets/icons/ArrowDownIcon';
 import {MockUserPngImage} from 'shared/assets/images/mock';
 import {COLORS} from 'shared/constants/colors';
 import {HOME_STACK} from 'shared/navigation/routes';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 
-interface Props {
-  activeInfo?: 'answear' | 'comments' | 'views';
-}
-
-const Question: FC<Props> = ({activeInfo}) => {
+export default function Poll() {
   const navigation = useNavigation();
 
   return (
@@ -30,7 +26,7 @@ const Question: FC<Props> = ({activeInfo}) => {
           </RN.TouchableOpacity>
         </RN.View>
 
-        <RN.View p={12} style={styles.question}>
+        <RN.View p={12} style={styles.questionBox}>
           <RN.View style={styles.upDown}>
             <RN.TouchableOpacity style={styles.upButton}>
               <ArrowDownIcon size={32} />
@@ -42,64 +38,48 @@ const Question: FC<Props> = ({activeInfo}) => {
               <ArrowDownIcon size={32} />
             </RN.TouchableOpacity>
           </RN.View>
-          <RN.Text size="h2" font="Medium">
-            How do you define UX with an example?
-          </RN.Text>
+          <RN.View style={styles.question}>
+            <RN.Text size="h2" font="Medium">
+              How do you define UX with an example?
+            </RN.Text>
+            <RN.View style={styles.pollItemBox}>
+              <RN.TouchableOpacity style={styles.pollItem}>
+                <RN.View style={styles.pollRadio} />
+                <RN.Text size="h4" font="Medium">
+                  Google
+                </RN.Text>
+              </RN.TouchableOpacity>
+              <RN.TouchableOpacity style={styles.pollItem}>
+                <RN.View style={styles.pollRadio} />
+                <RN.Text size="h4" font="Medium">
+                  Safari
+                </RN.Text>
+              </RN.TouchableOpacity>
+            </RN.View>
+          </RN.View>
         </RN.View>
       </RN.View>
       <RN.View style={styles.answearsCommentViews}>
         <RN.TouchableOpacity
-          style={[
-            styles.answear,
-            {
-              borderColor:
-                activeInfo === 'answear' ? COLORS.white : COLORS.transparent,
-            },
-          ]}
           onPress={() => navigation.navigate(HOME_STACK.ANSWEAR as never)}>
-          <RN.Text
-            size="h4"
-            font="Medium"
-            color={activeInfo === 'answear' ? COLORS.white : COLORS.textGray}>
+          <RN.Text size="h4" font="Medium" color={COLORS.darkGray2}>
             Answears:5
           </RN.Text>
         </RN.TouchableOpacity>
-        <RN.TouchableOpacity
-          style={[
-            styles.answear,
-            {
-              borderColor:
-                activeInfo === 'comments' ? COLORS.white : COLORS.transparent,
-            },
-          ]}>
-          <RN.Text
-            size="h4"
-            font="Medium"
-            color={activeInfo === 'comments' ? COLORS.white : COLORS.textGray}>
+        <RN.TouchableOpacity>
+          <RN.Text size="h4" font="Medium" color={COLORS.darkGray2}>
             Comments: 10
           </RN.Text>
         </RN.TouchableOpacity>
-        <RN.TouchableOpacity
-          style={[
-            styles.answear,
-            {
-              borderColor:
-                activeInfo === 'views' ? COLORS.white : COLORS.transparent,
-            },
-          ]}>
-          <RN.Text
-            size="h4"
-            font="Medium"
-            color={activeInfo === 'views' ? COLORS.white : COLORS.textGray}>
+        <RN.TouchableOpacity>
+          <RN.Text size="h4" font="Medium" color={COLORS.darkGray2}>
             Views: 20
           </RN.Text>
         </RN.TouchableOpacity>
       </RN.View>
     </RN.View>
   );
-};
-
-export default Question;
+}
 
 const styles = RN.StyleSheet.create({
   container: {
@@ -126,9 +106,31 @@ const styles = RN.StyleSheet.create({
     borderColor: COLORS.lightGray,
     borderRadius: 40,
   },
-  question: {
+  questionBox: {
     flexDirection: 'row',
     gap: 10,
+  },
+  question: {
+    gap: 10,
+  },
+  pollItemBox: {
+    gap: 5,
+  },
+  pollItem: {
+    padding: 5,
+    borderWidth: 1,
+    borderColor: COLORS.lightGray,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  pollRadio: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: COLORS.lightGray,
   },
   upDown: {
     alignItems: 'center',
@@ -141,13 +143,6 @@ const styles = RN.StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: normalizeWidth(15),
-    paddingVertical: normalizeHeight(15),
-  },
-  answear: {
-    borderWidth: 1,
-    padding: 5,
-    borderRadius: 15,
-    borderColor: COLORS.white,
-    color: COLORS.white,
+    paddingVertical: normalizeHeight(20),
   },
 });

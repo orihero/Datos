@@ -7,6 +7,7 @@ import Loading from 'shared/utils/Loading';
 import NavigationService from 'shared/navigation/NavigationService';
 import {REGISTER_STACK, ROOT_STACK} from 'shared/navigation/routes';
 import UsersApi from 'shared/api/users.api';
+import {Alert} from 'react-native';
 
 export interface RegisterStoreState {
   login: {
@@ -19,7 +20,7 @@ export interface RegisterStoreState {
   setup: {
     firstName: string;
     lastName: string;
-    neckname: string;
+    nickname: string;
     userImageUrl: string | null;
     gender: 'male' | 'female';
   };
@@ -36,7 +37,7 @@ const initialState: RegisterStoreState = {
   setup: {
     firstName: '',
     lastName: '',
-    neckname: '',
+    nickname: '',
     userImageUrl: null,
     gender: 'male',
   },
@@ -46,6 +47,7 @@ export default class RegisterStore {
   state: RegisterStoreState = initialState;
   private confirmResult: FirebaseAuthTypes.ConfirmationResult | null = null;
   loadingWhenLogIn: Loading = new Loading();
+  loadingWhenGoogleLogIn: Loading = new Loading();
   loadingWhenConfirm: Loading = new Loading();
   loadingWhenOnFinish: Loading = new Loading();
 
@@ -114,6 +116,8 @@ export default class RegisterStore {
       }, 400);
     } catch (err) {
       console.log(['[Error-onLoginWithPhone]:', err]);
+      Alert.alert(`${err}`);
+      this.loadingWhenLogIn.hide();
     } finally {
       setTimeout(() => this.loadingWhenLogIn.hide, 2000);
     }
@@ -175,7 +179,7 @@ export default class RegisterStore {
     };
     try {
       this.loadingWhenOnFinish.show();
-      await UsersApi.addUser(newUser);
+      await UsersApi.addUser(newUser as never);
       this.rootStore.local.setUserId(_id);
       setTimeout(() => {
         NavigationService.navigate(ROOT_STACK.HOME);
@@ -185,6 +189,48 @@ export default class RegisterStore {
       console.log(['[Error-onSetUpFinish]:', err]);
     } finally {
       setTimeout(() => this.loadingWhenOnFinish.hide, 2000);
+    }
+  };
+
+  onSignInWithGoogle = async () => {
+    try {
+      this.loadingWhenGoogleLogIn.show();
+      const res = await RegisterApi.signInWithGoogle();
+      const newUser = {
+        _id: res.user.uid,
+        createAt: Date.now(),
+        email: res.user.email,
+        firstName: res.additionalUserInfo?.profile?.given_name,
+        lastName: res.additionalUserInfo?.profile?.family_name,
+        nickname: res.additionalUserInfo?.profile?.name.split(' ').join(''),
+        userImageUrl: res.additionalUserInfo?.profile?.picture,
+      };
+      const isHasUser = await UsersApi.getUser(newUser._id);
+      if (isHasUser === null) {
+        await UsersApi.addUser(newUser as never);
+      }
+      this.rootStore.local.setUserId(newUser._id);
+      setTimeout(() => {
+        NavigationService.navigate(ROOT_STACK.HOME);
+        this.loadingWhenGoogleLogIn.hide();
+      }, 400);
+    } catch (err) {
+      console.log(['[Error-onSignInWithGoogle]:', err]);
+    } finally {
+      setTimeout(() => this.loadingWhenGoogleLogIn.hide, 2000);
+    }
+  };
+
+  onSignOut = async () => {
+    try {
+      await RegisterApi.signOut();
+      this.rootStore.local.clearUserId();
+      setTimeout(() => {
+        NavigationService.navigate(ROOT_STACK.ONBOARDING);
+        this.loadingWhenGoogleLogIn.hide();
+      }, 400);
+    } catch (err) {
+      console.log(['[Error-onSignOut]:', err]);
     }
   };
 }

@@ -22,7 +22,7 @@ export default class UsersApi {
       const querySnapshot = await UsersApi.collection
         .where('_id', '==', userId)
         .get();
-      if (querySnapshot && !querySnapshot.empty && querySnapshot.size === 1) {
+      if (querySnapshot && !querySnapshot.empty) {
         result = querySnapshot.docs[0].data();
       }
     } catch (err) {

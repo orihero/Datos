@@ -9,10 +9,17 @@ import {COLORS} from 'shared/constants/colors';
 import {FontFamily} from 'shared/constants/fonts';
 import {useRegister} from 'shared/store/hooks/useRegister';
 import {addAlpha} from 'shared/utils/color';
+import GoogleIcon from 'shared/assets/icons/GoogleIcon';
 
 function LoginScreen() {
-  const {state, onChangeOfLogin, onLoginWithPhone, loadingWhenLogIn} =
-    useRegister();
+  const {
+    state,
+    onChangeOfLogin,
+    onLoginWithPhone,
+    loadingWhenLogIn,
+    loadingWhenGoogleLogIn,
+    onSignInWithGoogle,
+  } = useRegister();
 
   const inputValue = state.login.input;
   const disabledButton = !inputValue;
@@ -29,12 +36,20 @@ function LoginScreen() {
           onChangeCountry={country => onChangeOfLogin('country', country)}
           onChangeInputValue={input => onChangeOfLogin('input', input)}
         />
-        <Spacing steps={4} />
+        <Spacing steps={2} />
         <Button
           title="Log In"
           onPress={onLoginWithPhone}
           disabled={disabledButton}
           loading={loadingWhenLogIn.loading}
+        />
+        <Spacing steps={2} />
+        <Button
+          title="Sign in with google"
+          onPress={onSignInWithGoogle}
+          loading={loadingWhenGoogleLogIn.loading}
+          icon={<GoogleIcon size={32} />}
+          outline
         />
       </RN.View>
     </Container>

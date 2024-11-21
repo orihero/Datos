@@ -1,23 +1,46 @@
 import RN from 'components/RN';
 import {Spacing} from 'components/Spacing';
-import React from 'react';
+import React, {FC, useState} from 'react';
 import {COLORS} from 'shared/constants/colors';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 
-export default () => (
-  <>
-    <Spacing height={20} />
-    <RN.View style={styles.group}>
-      <RN.TouchableOpacity style={styles.button}>
-        <RN.Text style={styles.buttonText}>Question</RN.Text>
-      </RN.TouchableOpacity>
-      <RN.TouchableOpacity style={[styles.button, styles.activeButton]}>
-        <RN.Text style={styles.buttonText}>Answers</RN.Text>
-      </RN.TouchableOpacity>
-    </RN.View>
-    <Spacing height={20} />
-  </>
-);
+interface Props {
+  activeTab: string;
+}
+
+const ProfileTab: FC<Props> = ({activeTab}) => {
+  const [active, setActive] = useState<'Posts' | 'Answears'>(
+    activeTab as never,
+  );
+
+  const onChangePosts = () => {
+    setActive('Posts');
+  };
+
+  const onChangeAnswears = () => {
+    setActive('Answears');
+  };
+
+  return (
+    <>
+      <Spacing height={20} />
+      <RN.View style={styles.group}>
+        <RN.TouchableOpacity
+          onPress={onChangePosts}
+          style={[styles.button, active === 'Posts' && styles.activeButton]}>
+          <RN.Text style={styles.buttonText}>Posts</RN.Text>
+        </RN.TouchableOpacity>
+        <RN.TouchableOpacity
+          onPress={onChangeAnswears}
+          style={[styles.button, active === 'Answears' && styles.activeButton]}>
+          <RN.Text style={styles.buttonText}>Answers</RN.Text>
+        </RN.TouchableOpacity>
+      </RN.View>
+      <Spacing height={20} />
+    </>
+  );
+};
+export default ProfileTab;
 
 const styles = RN.StyleSheet.create({
   group: {
