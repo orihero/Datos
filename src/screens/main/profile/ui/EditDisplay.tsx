@@ -1,4 +1,3 @@
-import {User} from '@types';
 import {TextInput} from 'components/Inputs/TextInput';
 import RN from 'components/RN';
 import {Spacing} from 'components/Spacing';
@@ -7,16 +6,17 @@ import {ActivityIndicator} from 'react-native';
 import CameraIcon from 'shared/assets/icons/CameraIcon';
 import {COLORS} from 'shared/constants/colors';
 import {FontFamily} from 'shared/constants/fonts';
-import {useUser} from 'shared/store/hooks/useUser';
+import {useRootStore} from 'shared/store/hooks/useRootStore';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 
 const floatViewHeight = normalizeHeight(132);
 
-export default ({firstName, lastName, nickname, userImageUrl}: User) => {
-  const {updateUser} = useUser();
+export default () => {
+  const {state, onChangeOfUserState} = useRootStore().user;
+
   const isLoading = useMemo(
-    () => !firstName || !lastName || !nickname || !userImageUrl,
-    [firstName, lastName, nickname, userImageUrl],
+    () => !state.userState.userImageUrl,
+    [state.userState.userImageUrl],
   );
 
   return (
@@ -28,7 +28,10 @@ export default ({firstName, lastName, nickname, userImageUrl}: User) => {
             <ActivityIndicator size="large" color={COLORS.black} />
           ) : (
             <>
-              <RN.Image source={{uri: userImageUrl!}} style={styles.image} />
+              <RN.Image
+                source={{uri: state.userState.userImageUrl}}
+                style={styles.image}
+              />
               <RN.TouchableOpacity style={styles.iconButton}>
                 <CameraIcon size={32} color={COLORS.white} />
               </RN.TouchableOpacity>
@@ -38,20 +41,20 @@ export default ({firstName, lastName, nickname, userImageUrl}: User) => {
         <Spacing height={20} />
         <RN.View>
           <TextInput
-            onChangeText={() => {}}
-            value={firstName}
+            onChangeText={e => onChangeOfUserState('firstName', e)}
+            value={state.userState.firstName}
             inputStyle={styles.input}
           />
           <Spacing height={10} />
           <TextInput
-            onChangeText={() => {}}
-            value={lastName}
+            onChangeText={e => onChangeOfUserState('lastName', e)}
+            value={state.userState.lastName}
             inputStyle={styles.input}
           />
           <Spacing height={10} />
           <TextInput
-            onChangeText={() => {}}
-            value={nickname}
+            onChangeText={e => onChangeOfUserState('nickname', e)}
+            value={state.userState.nickname}
             inputStyle={styles.input}
           />
         </RN.View>
@@ -113,7 +116,9 @@ const styles = RN.StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.lightGray,
     color: COLORS.white,
-    padding: 10,
-    borderRadius: 20,
+    paddingHorizontal: normalizeWidth(20),
+    paddingVertical: normalizeHeight(20),
+    borderRadius: 30,
+    width: '100%',
   },
 });

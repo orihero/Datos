@@ -48,14 +48,14 @@ export default ({
           )}
         </RN.View>
         <RN.View style={styles.floatFooter}>
-          <RN.View style={styles.item}>
+          {/* <RN.View style={styles.item}>
             <RN.Text children="Followers" style={styles.lightSubTitle} />
             <RN.Text children="894" style={styles.subTitle} />
           </RN.View>
           <RN.View style={styles.item}>
             <RN.Text children="Folowing" style={styles.lightSubTitle} />
             <RN.Text children="542" style={styles.subTitle} />
-          </RN.View>
+          </RN.View> */}
           <RN.View style={styles.item}>
             <RN.Text children="Since" style={styles.lightSubTitle} />
             <RN.Text children={date && date} style={styles.subTitle} />
@@ -85,7 +85,7 @@ const styles = RN.StyleSheet.create({
     zIndex: -1,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     bottom: 0,
     backgroundColor: COLORS.dargGray,
     width: '100%',

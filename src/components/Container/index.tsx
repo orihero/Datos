@@ -9,6 +9,7 @@ interface ContainerProps extends PropsWithChildren {
   Footer?: ReactNode;
   isScroll?: boolean;
   isPaddingTop?: boolean;
+  onPress?: () => void;
 }
 
 const Container: FC<ContainerProps> = ({
@@ -18,11 +19,13 @@ const Container: FC<ContainerProps> = ({
   isPaddingTop = false,
   Header,
   Footer,
+  onPress,
 }) => {
   const {paddingTop} = useAppViewInsets();
   const Main = isScroll ? RN.ScrollView : RN.View;
   return (
-    <RN.View
+    <RN.Pressable
+      onPress={onPress}
       style={[
         styles.container,
         {backgroundColor: background},
@@ -31,7 +34,7 @@ const Container: FC<ContainerProps> = ({
       {Header}
       <Main style={styles.main}>{children}</Main>
       {Footer}
-    </RN.View>
+    </RN.Pressable>
   );
 };
 

@@ -13,6 +13,7 @@ interface Props {
   onChangeText(value: string): void;
   containerStyle?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
+  placeholderTextColor?: string;
 }
 
 export const TextInput: FC<Props> = ({
@@ -23,6 +24,7 @@ export const TextInput: FC<Props> = ({
   inputStyle,
   LeftElement,
   RightElement,
+  placeholderTextColor,
   numberOfLines = 1,
 }) => {
   return (
@@ -32,7 +34,11 @@ export const TextInput: FC<Props> = ({
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor={addAlpha(COLORS.black, 0.6)}
+        placeholderTextColor={
+          placeholderTextColor
+            ? placeholderTextColor
+            : addAlpha(COLORS.black, 0.6)
+        }
         style={[styles.input, inputStyle]}
         autoCapitalize="none"
         autoCorrect={false}
@@ -45,7 +51,7 @@ export const TextInput: FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
+    // paddingHorizontal: 16,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: addAlpha(COLORS.black, 0.2),
