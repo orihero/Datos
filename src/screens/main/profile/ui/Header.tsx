@@ -6,18 +6,18 @@ import SettingsIcon from 'shared/assets/icons/SettingsIcon';
 import ChatIcon from 'shared/assets/icons/ChatIcon';
 import {COLORS} from 'shared/constants/colors';
 import {normalizeWidth} from 'shared/utils/dimensions';
-import {useNavigation} from '@react-navigation/native';
 import {HOME_STACK} from 'shared/navigation/routes';
+import NavigationService from 'shared/navigation/NavigationService';
 
 export default () => {
-  const {goBack, navigate} = useNavigation();
-
   return (
     <Header
       containerStyle={styles.header}
       LeftHeader={
         <RN.View pt={10}>
-          <RN.TouchableOpacity style={styles.iconButton} onPress={goBack}>
+          <RN.TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => NavigationService.goBack()}>
             <ArrowLeftIcon size={24} color={COLORS.white} />
           </RN.TouchableOpacity>
         </RN.View>
@@ -29,7 +29,9 @@ export default () => {
           </RN.TouchableOpacity>
           <RN.TouchableOpacity
             style={styles.iconButton}
-            onPress={() => navigate(HOME_STACK.PROFILE_SETTINGS as never)}>
+            onPress={() =>
+              NavigationService.navigate(HOME_STACK.PROFILE_SETTINGS)
+            }>
             <SettingsIcon size={24} color={COLORS.white} />
           </RN.TouchableOpacity>
         </RN.View>

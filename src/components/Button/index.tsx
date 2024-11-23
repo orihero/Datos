@@ -11,6 +11,9 @@ export function Button({
   loading = false,
   icon,
   outline,
+  height,
+  width,
+  borderColor,
 }: {
   title: string;
   onPress?: () => void;
@@ -18,6 +21,9 @@ export function Button({
   loading?: boolean;
   icon?: React.ReactNode;
   outline?: boolean;
+  height?: number;
+  width?: any;
+  borderColor?: string;
 }) {
   return (
     <RN.TouchableOpacity
@@ -28,6 +34,10 @@ export function Button({
         styles.button,
         disabled && styles.buttonDisabled,
         outline ? styles.buttonOutline : styles.buttonPrimary,
+        {
+          height: height ? height : 50,
+          width: width ? width : '100%',
+        },
       ]}>
       {loading ? (
         <ActivityIndicator
@@ -56,7 +66,6 @@ const styles = RN.StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderRadius: 16,
-    height: 50,
     gap: 10,
   },
   buttonPrimary: {

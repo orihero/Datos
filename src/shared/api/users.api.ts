@@ -16,7 +16,7 @@ export default class UsersApi {
     this.collection.doc(userId).delete();
 
   static getUser = async (userId: string) => {
-    let result: FirebaseFirestoreTypes.DocumentData | null = null;
+    let result: User | FirebaseFirestoreTypes.DocumentData | null = null;
 
     try {
       const querySnapshot = await UsersApi.collection
@@ -24,6 +24,7 @@ export default class UsersApi {
         .get();
       if (querySnapshot && !querySnapshot.empty) {
         result = querySnapshot.docs[0].data();
+        result = {...result, docId: querySnapshot.docs[0].id};
       }
     } catch (err) {
       console.log('[Error-getUser]:', err);

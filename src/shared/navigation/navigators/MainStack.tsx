@@ -13,6 +13,8 @@ import {useLocalStore} from 'shared/store/hooks/useLocalStore';
 import AnswearScreen from 'screens/main/answear';
 import CreateQuestion from 'screens/main/createQuestion';
 import ProfileSettings from 'screens/main/profile/Settings';
+import Topics from 'screens/main/topic';
+import createTopic from 'screens/main/topic/createNewTopic';
 
 export type RootStackParamList = {
   [ROOT_STACK.ONBOARDING]: NavigatorScreenParams<OnbordingStackParamList>;
@@ -43,6 +45,11 @@ const MainStack = () => {
       <Stack.Screen
         name={HOME_STACK.PROFILE_SETTINGS as never}
         component={ProfileSettings}
+      />
+      <Stack.Screen name={HOME_STACK.TOPICS as never} component={Topics} />
+      <Stack.Screen
+        name={HOME_STACK.CREATE_TOPIC as never}
+        component={createTopic}
       />
     </>
   );
