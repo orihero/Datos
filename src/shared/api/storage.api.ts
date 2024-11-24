@@ -1,17 +1,16 @@
 import storage, {FirebaseStorageTypes} from '@react-native-firebase/storage';
-import type {Image} from 'react-native-image-crop-picker';
+import type {Asset} from 'react-native-image-picker';
 
 export default class StorageApi {
   static uploadImage = async ({
     file,
   }: {
-    file: Image;
+    file: Asset;
   }): Promise<string | null> => {
-    const uniqueFileName = `${Date.now()}__${file.filename}`;
     try {
       const res = await storage()
-        .ref(`images/${uniqueFileName}.${file.mime.split('/')[1]}`)
-        .putFile(file.path);
+        .ref(`topicAvatars/${file.fileName}.${file.fileName?.split('/')[1]}`)
+        .putFile(file.uri as never);
 
       return await getUrlFromStorage(res);
     } catch (error) {

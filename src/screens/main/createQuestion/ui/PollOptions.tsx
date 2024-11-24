@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import CrossRedCircleSmallIcon from 'shared/assets/icons/CrossRedCircleSmallIcon';
 import VerticalMenu from 'shared/assets/icons/VerticalMenu';
+import {COLORS} from 'shared/constants/colors';
 
 interface PollOptionProps {
   id: string;
@@ -20,12 +21,6 @@ interface PollOptionProps {
   onDragEnd: (position: number) => void;
   index: number;
 }
-
-const COLORS = {
-  white: '#FFFFFF',
-  lightGray: '#A0A0A0',
-  darkGray: '#2A2A2A',
-};
 
 export const PollOption = ({
   id,
@@ -65,7 +60,7 @@ export const PollOption = ({
     <Animated.View style={[styles.container, animatedStyle]}>
       <PanGestureHandler onGestureEvent={panGesture}>
         <Animated.View style={styles.dragHandle}>
-          <VerticalMenu size={20} color={COLORS.lightGray} />
+          <VerticalMenu size={20} color={COLORS.textGray} />
         </Animated.View>
       </PanGestureHandler>
 
@@ -73,7 +68,7 @@ export const PollOption = ({
         value={text}
         onChangeText={onChangeText}
         placeholder={`Option ${id}`}
-        placeholderTextColor={COLORS.lightGray}
+        placeholderTextColor={COLORS.textGray}
         style={styles.input}
       />
 
@@ -90,7 +85,7 @@ export default PollOption;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.darkGray,
+    backgroundColor: COLORS.dargGray,
     padding: 12,
     borderRadius: 10,
     flexDirection: 'row',

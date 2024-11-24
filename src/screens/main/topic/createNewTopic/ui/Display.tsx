@@ -9,14 +9,21 @@ import {FontFamily} from 'shared/constants/fonts';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {ActivityIndicator} from 'react-native';
 
 const floatViewHeight = normalizeHeight(132);
 
 export default observer(() => {
-  const {onChangeOfNewTopicState, state, onCreateNewTopic} =
-    useRootStore().topic;
+  const {
+    onChangeOfNewTopicState,
+    state,
+    onCreateNewTopic,
+    onSelectTopicAvatar,
+    loadingWhenCreateTopic,
+    loadingWhenPutAvatar,
+  } = useRootStore().topic;
 
-  const handlePickImage = () => {
+  const handlePickImage = async () => {
     launchImageLibrary(
       {
         mediaType: 'mixed',
@@ -27,7 +34,8 @@ export default observer(() => {
         if (response.didCancel || response.errorMessage) {
           console.log('User cancelled image picker or there was an error');
         } else {
-          console.log('response.assets', response.assets);
+          const file = response.assets ? response.assets[0] : null;
+          onSelectTopicAvatar(file as never);
         }
       },
     );
@@ -39,12 +47,19 @@ export default observer(() => {
       <RN.View pb={floatViewHeight * 0.6}>
         <RN.View style={styles.container}>
           <RN.View style={styles.imageBox}>
-            {/* <RN.Image source={{uri: null || ''}} style={styles.image} /> */}
-            <RN.TouchableOpacity
-              style={styles.iconButton}
-              onPress={handlePickImage}>
-              <CameraIcon size={32} color={COLORS.white} />
-            </RN.TouchableOpacity>
+            <RN.Image
+              source={{uri: state.newAvatar.uri}}
+              style={styles.image}
+            />
+            {loadingWhenPutAvatar.loading ? (
+              <ActivityIndicator color={COLORS.blue} size={32} />
+            ) : (
+              <RN.TouchableOpacity
+                style={styles.iconButton}
+                onPress={handlePickImage}>
+                <CameraIcon size={32} color={COLORS.white} />
+              </RN.TouchableOpacity>
+            )}
           </RN.View>
         </RN.View>
         <Spacing height={20} />
@@ -68,7 +83,11 @@ export default observer(() => {
           <Spacing height={20} />
           <Button
             title="Save"
-            disabled={!state.newTopicState.title.length}
+            disabled={
+              !state.newTopicState.title.length ||
+              !state.newTopicState.description.length
+            }
+            loading={loadingWhenCreateTopic.loading}
             onPress={onCreateNewTopic}
           />
         </RN.View>
@@ -91,8 +110,8 @@ const styles = RN.StyleSheet.create({
     borderRadius: 100,
   },
   image: {
-    width: 150,
-    height: 150,
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
     borderRadius: 100,
     position: 'absolute',
@@ -130,6 +149,7 @@ const styles = RN.StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.lightGray,
     borderRadius: 30,
+    color: COLORS.white,
     height: normalizeHeight(100),
     paddingHorizontal: normalizeWidth(20),
     paddingVertical: normalizeHeight(20),

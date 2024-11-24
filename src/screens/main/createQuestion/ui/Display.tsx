@@ -1,12 +1,21 @@
 import RN from 'components/RN';
-import React from 'react';
-import {Keyboard} from 'react-native';
+import React, {useCallback} from 'react';
 import {COLORS} from 'shared/constants/colors';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
 import {normalizeHeight} from 'shared/utils/dimensions';
+import ReanimatedCarousel from 'components/ReanimatedCarousel/ReanimatedCarousel';
+import {observer} from 'mobx-react-lite';
 
-export default () => {
+export default observer(() => {
   const {onChangeOfNewPostState, state} = useRootStore().post;
+
+  const renderMedia = useCallback(() => {
+    return state.newPostMediaUrls?.length ? (
+      <ReanimatedCarousel
+        data={state.newPostMediaUrls.map(item => item.uri) as never}
+      />
+    ) : null;
+  }, [state.newPostMediaUrls]);
 
   return (
     <RN.Pressable style={styles.container}>
@@ -18,6 +27,7 @@ export default () => {
         style={styles.title}
         multiline
       />
+      {renderMedia()}
       <RN.TextInput
         onChangeText={e => onChangeOfNewPostState('title', e)}
         value={state.newPostState.body}
@@ -28,7 +38,7 @@ export default () => {
       />
     </RN.Pressable>
   );
-};
+});
 
 const styles = RN.StyleSheet.create({
   container: {
