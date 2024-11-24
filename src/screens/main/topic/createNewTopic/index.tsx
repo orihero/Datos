@@ -11,7 +11,9 @@ const CreateTopic = () => {
   };
 
   return (
-    <Container Header={<Header title="New Topic" />} onPress={dismissKeyboard}>
+    <Container
+      Header={<Header title="New Topic" isTopics={false} />}
+      onPress={dismissKeyboard}>
       <RN.View ph={12} flex={1} g={10}>
         <CreateTopicDisplay />
       </RN.View>

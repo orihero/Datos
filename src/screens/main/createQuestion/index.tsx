@@ -12,7 +12,6 @@ import {Keyboard} from 'react-native';
 
 const CreateQuestion = () => {
   const {state} = useRootStore().post;
-  console.log('newPost', state.newPostState);
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
