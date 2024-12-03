@@ -15,7 +15,7 @@ export default ({
   lastName,
   nickname,
   userImageUrl,
-  createAt,
+  createdAt,
 }: User) => {
   const fullName = useMemo(
     () => `${firstName} ${lastName}`,
@@ -27,8 +27,8 @@ export default ({
   );
 
   const date = useMemo(
-    () => convertToShortDate(createAt ? createAt : Date.now()),
-    [createAt],
+    () => convertToShortDate(createdAt ? createdAt : Date.now()),
+    [createdAt],
   );
 
   return (

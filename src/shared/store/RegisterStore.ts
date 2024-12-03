@@ -8,6 +8,7 @@ import NavigationService from 'shared/navigation/NavigationService';
 import {REGISTER_STACK, ROOT_STACK} from 'shared/navigation/routes';
 import UsersApi from 'shared/api/users.api';
 import {Alert} from 'react-native';
+import {nanoid} from 'nanoid/non-secure';
 
 export interface RegisterStoreState {
   login: {
@@ -197,13 +198,15 @@ export default class RegisterStore {
       this.loadingWhenGoogleLogIn.show();
       const res = await RegisterApi.signInWithGoogle();
       const newUser = {
-        _id: res.user.uid,
-        createAt: Date.now(),
+        _id: nanoid(10),
+        uid: res.user.uid,
+        createdAt: Date.now(),
         email: res.user.email,
         firstName: res.additionalUserInfo?.profile?.given_name,
         lastName: res.additionalUserInfo?.profile?.family_name,
         nickname: res.additionalUserInfo?.profile?.name.split(' ').join(''),
         userImageUrl: res.additionalUserInfo?.profile?.picture,
+        interest: this.rootStore.local.selectedInterest,
       };
       const isHasUser = await UsersApi.getUser(newUser._id);
       if (isHasUser === null) {

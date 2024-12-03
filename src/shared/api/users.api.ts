@@ -7,7 +7,7 @@ export default class UsersApi {
   static collection = firestore().collection('users');
 
   static addUser = async (userData: User) =>
-    await this.collection.add({...userData, createAt: Date.now()});
+    await this.collection.add({...userData, createdAt: Date.now()});
 
   static updateUser = async (userId: string, userData: Partial<User>) =>
     this.collection.doc(userId).update(userData);

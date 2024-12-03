@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   TextInput,
@@ -20,6 +20,15 @@ import {useRootStore} from 'shared/store/hooks/useRootStore';
 export default observer(() => {
   const {state, onChangeOfNewPostState} = useRootStore().post;
   const [showDaysSelector, setShowDaysSelector] = useState(false);
+
+  const titleInputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    // Ekran ochilganda fokus berish
+    if (titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, []);
 
   const addOption = () => {
     if (state.newPostState.pollOptions.length < 4) {
@@ -70,6 +79,7 @@ export default observer(() => {
   return (
     <GestureHandlerRootView style={styles.container}>
       <TextInput
+        ref={titleInputRef}
         value={state.newPostState.title}
         onChangeText={e => onChangeOfNewPostState('title', e)}
         placeholder="Title"

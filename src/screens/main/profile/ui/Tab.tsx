@@ -9,16 +9,14 @@ interface Props {
 }
 
 const ProfileTab: FC<Props> = ({activeTab}) => {
-  const [active, setActive] = useState<'Posts' | 'Answears'>(
-    activeTab as never,
-  );
+  const [active, setActive] = useState<'Posts' | 'Answers'>(activeTab as never);
 
   const onChangePosts = () => {
     setActive('Posts');
   };
 
-  const onChangeAnswears = () => {
-    setActive('Answears');
+  const onChangeAnswers = () => {
+    setActive('Answers');
   };
 
   return (
@@ -31,8 +29,8 @@ const ProfileTab: FC<Props> = ({activeTab}) => {
           <RN.Text style={styles.buttonText}>Posts</RN.Text>
         </RN.TouchableOpacity>
         <RN.TouchableOpacity
-          onPress={onChangeAnswears}
-          style={[styles.button, active === 'Answears' && styles.activeButton]}>
+          onPress={onChangeAnswers}
+          style={[styles.button, active === 'Answers' && styles.activeButton]}>
           <RN.Text style={styles.buttonText}>Answers</RN.Text>
         </RN.TouchableOpacity>
       </RN.View>

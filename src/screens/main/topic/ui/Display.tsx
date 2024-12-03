@@ -12,31 +12,47 @@ import {Spacing} from 'components/Spacing';
 
 export default observer(() => {
   const {state, onRemoveTopic, onSelectTopic} = useRootStore().post;
-  const {state: topicState} = useRootStore().topic;
+  const {state: topicState, onFollowToTopic} = useRootStore().topic;
+  const {userId} = useRootStore().local;
 
   const [searchText, setSearchText] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const filteredTopics = useCallback(() => {
     return topicState.allTopics.filter(topic =>
-      topic.title.toLowerCase().includes(searchText.toLowerCase()),
+      topic.title.toLowerCase()?.includes(searchText.toLowerCase()),
     );
   }, [searchText, topicState.allTopics]);
 
-  const renderSelectedTopics = useCallback(() => {
-    return state.newPostState.topics?.map(item => {
-      return (
-        <RN.View key={item._id} style={styles.selectedTopics}>
-          <RN.Text children={item.title} color={COLORS.white} />
-          <RN.TouchableOpacity
-            hitSlop={HIT_SLOP}
-            onPress={() => onRemoveTopic(item._id)}>
-            <CrossRedCircleSmallIcon size={24} color={COLORS.white} />
-          </RN.TouchableOpacity>
-        </RN.View>
-      );
-    });
-  }, [onRemoveTopic, state.newPostState.topics]);
+  const renderSelectedTopic = useCallback(() => {
+    return state.newPostState.topic?._id ? (
+      <RN.View style={styles.selectedTopics}>
+        <RN.Image
+          source={{uri: state.newPostState?.topic.avatar}}
+          style={styles.selectedTopicImage}
+        />
+        <RN.Text
+          children={state.newPostState.topic?.title}
+          color={COLORS.white}
+          size="h3"
+        />
+        <RN.TouchableOpacity hitSlop={HIT_SLOP} onPress={onRemoveTopic}>
+          <CrossRedCircleSmallIcon size={24} color={COLORS.white} />
+        </RN.TouchableOpacity>
+      </RN.View>
+    ) : (
+      <RN.TextInput
+        value={searchText}
+        onChangeText={text => {
+          setSearchText(text);
+          setDropdownVisible(text.length > 0);
+        }}
+        placeholder="Topic"
+        placeholderTextColor={COLORS.lightGray}
+        style={styles.input}
+      />
+    );
+  }, [onRemoveTopic, searchText, state.newPostState.topic]);
 
   const handleTopicSelect = useCallback(
     (topic: Topic) => {
@@ -49,18 +65,7 @@ export default observer(() => {
 
   return (
     <RN.View style={styles.container}>
-      <RN.View style={styles.topicInput} pt={20}>
-        <RN.TextInput
-          value={searchText}
-          onChangeText={text => {
-            setSearchText(text);
-            setDropdownVisible(text.length > 0);
-          }}
-          placeholder="Topic"
-          placeholderTextColor={COLORS.lightGray}
-          style={styles.input}
-        />
-      </RN.View>
+      <RN.View style={styles.topicInput}>{renderSelectedTopic()}</RN.View>
       {dropdownVisible && (
         <RN.ScrollView style={styles.dropdown}>
           {filteredTopics().map(topic => (
@@ -68,13 +73,14 @@ export default observer(() => {
               <TopicItem
                 topic={topic}
                 onPress={() => handleTopicSelect(topic as never)}
+                onFollow={() => onFollowToTopic(topic)}
+                isFollowed={topic.followerIds?.includes(userId as never)}
               />
               <Spacing height={5} />
             </RN.View>
           ))}
         </RN.ScrollView>
       )}
-      <RN.View style={styles.topics}>{renderSelectedTopics()}</RN.View>
     </RN.View>
   );
 });
@@ -83,7 +89,10 @@ const styles = RN.StyleSheet.create({
   container: {
     gap: 15,
   },
-  topicInput: {},
+  topicInput: {
+    justifyContent: 'center',
+    height: normalizeHeight(80),
+  },
   input: {
     paddingHorizontal: normalizeWidth(20),
     paddingVertical: normalizeHeight(12),
@@ -102,6 +111,11 @@ const styles = RN.StyleSheet.create({
     flexDirection: 'row',
     gap: 5,
     alignItems: 'center',
+  },
+  selectedTopicImage: {
+    width: normalizeWidth(50),
+    height: normalizeHeight(50),
+    borderRadius: 50,
   },
   dropdown: {
     maxHeight: normalizeHeight(300),

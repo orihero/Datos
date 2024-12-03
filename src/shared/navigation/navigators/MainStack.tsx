@@ -10,11 +10,11 @@ import BottomBarStack from './BottomBarStack';
 import RegisterStack from './RegisterStack';
 import {observer} from 'mobx-react-lite';
 import {useLocalStore} from 'shared/store/hooks/useLocalStore';
-import AnswearScreen from 'screens/main/answear';
 import CreateQuestion from 'screens/main/createQuestion';
 import ProfileSettings from 'screens/main/profile/Settings';
 import Topics from 'screens/main/topic';
 import createTopic from 'screens/main/topic/createNewTopic';
+import AnswerScreen from 'screens/main/answer';
 
 export type RootStackParamList = {
   [ROOT_STACK.ONBOARDING]: NavigatorScreenParams<OnbordingStackParamList>;
@@ -35,8 +35,8 @@ const MainStack = () => {
     <>
       <Stack.Screen name={ROOT_STACK.HOME} component={BottomBarStack} />
       <Stack.Screen
-        name={HOME_STACK.ANSWEAR as never}
-        component={AnswearScreen}
+        name={HOME_STACK.ANSWER as never}
+        component={AnswerScreen}
       />
       <Stack.Screen
         name={HOME_STACK.CREATE_QUESTION as never}

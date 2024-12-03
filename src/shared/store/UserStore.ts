@@ -21,7 +21,22 @@ export default class UserStore {
   constructor(root: RootStore) {
     makeAutoObservable(this);
     this.rootStore = root;
+    this.getUserInfo();
   }
+
+  getUserInfo = async () => {
+    if (!this.rootStore.local.userId) {
+      return;
+    }
+    try {
+      const res = await UsersApi.getUser(!this.rootStore.local.userId as never);
+      if (res) {
+        this.onGetUserState(res as never);
+      }
+    } catch (err) {
+      console.log('Error-getUserInfo', err);
+    }
+  };
 
   onGetUserState = (user: User) => {
     runInAction(() => {
@@ -60,6 +75,47 @@ export default class UserStore {
       setTimeout(() => {
         this.loadingWhenUserUpdate.hide();
       }, 200);
+    }
+  };
+
+  onFollowToUser = async (user: User) => {
+    try {
+      if (!user.followerIds?.includes(this.rootStore.local.userId as never)) {
+        const newUserState = {
+          ...user,
+          followerIds: [
+            ...user.followerIds,
+            this.rootStore.local.userId as never,
+          ],
+        };
+        await UsersApi.updateUser(user.docId, newUserState);
+        const userData = await UsersApi.getUser(user._id);
+        runInAction(() => {
+          const newData = {
+            ...this.rootStore.post.state.previewPost,
+            user: userData,
+          };
+          this.rootStore.post.state.previewPost = newData as never;
+        });
+      } else {
+        const newUserState = {
+          ...user,
+          followerIds: user.followerIds.filter(
+            item => item !== this.rootStore.local.userId,
+          ),
+        };
+        await UsersApi.updateUser(user.docId, newUserState);
+        const userData = await UsersApi.getUser(user._id);
+        runInAction(() => {
+          const newData = {
+            ...this.rootStore.post.state.previewPost,
+            user: userData,
+          };
+          this.rootStore.post.state.previewPost = newData as never;
+        });
+      }
+    } catch (error) {
+      console.log(['Error: onFollowToUser'], error);
     }
   };
 }

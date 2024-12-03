@@ -7,23 +7,24 @@ import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 import {observer} from 'mobx-react-lite';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
+import VideoIcon from 'shared/assets/icons/VideoIcon';
 
 export default observer(() => {
-  const {onSelectNewPostMediaUrls} = useRootStore().post;
+  const {onSelectNewPostMediaUrl} = useRootStore().post;
 
   const handlePickImage = async () => {
     launchImageLibrary(
       {
         mediaType: 'photo',
-        selectionLimit: 0,
+        selectionLimit: 1,
         includeExtra: true,
       },
       async response => {
         if (response.didCancel || response.errorMessage) {
           console.log('User cancelled image picker or there was an error');
         } else {
-          const file = response.assets ? response.assets : null;
-          onSelectNewPostMediaUrls(file as never);
+          const file = response.assets ? response.assets[0] : null;
+          onSelectNewPostMediaUrl(file as never);
         }
       },
     );
@@ -31,11 +32,11 @@ export default observer(() => {
 
   return (
     <RN.View style={styles.container}>
-      <RN.TouchableOpacity>
-        <LinkIcon color={COLORS.textGray} />
-      </RN.TouchableOpacity>
       <RN.TouchableOpacity onPress={handlePickImage}>
         <GalleryIcon color={COLORS.textGray} />
+      </RN.TouchableOpacity>
+      <RN.TouchableOpacity>
+        <VideoIcon color={COLORS.textGray} size={18} />
       </RN.TouchableOpacity>
     </RN.View>
   );
@@ -43,8 +44,8 @@ export default observer(() => {
 
 const styles = RN.StyleSheet.create({
   container: {
-    paddingHorizontal: normalizeWidth(30),
-    paddingVertical: normalizeHeight(30),
+    paddingHorizontal: normalizeWidth(20),
+    paddingVertical: normalizeHeight(20),
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,

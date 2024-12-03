@@ -10,7 +10,7 @@ function ProfileScreen() {
   return (
     <Container Header={<ProfileHeader />}>
       <ProfileDisplay {...user} />
-      <ProfileTab activeTab={'Answears'} />
+      <ProfileTab activeTab={'Answers'} />
     </Container>
   );
 }

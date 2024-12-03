@@ -79,6 +79,7 @@ export default observer(() => {
             style={styles.inputDesc}
             placeholderTextColor={COLORS.textGray}
             multiline
+            textAlignVertical="top"
           />
           <Spacing height={20} />
           <Button
@@ -107,7 +108,7 @@ const styles = RN.StyleSheet.create({
     height: normalizeHeight(200),
     width: normalizeWidth(200),
     backgroundColor: COLORS.white,
-    borderRadius: 100,
+    borderRadius: 200,
   },
   image: {
     width: '100%',

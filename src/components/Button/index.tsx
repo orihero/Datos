@@ -37,6 +37,7 @@ export function Button({
         {
           height: height ? height : 50,
           width: width ? width : '100%',
+          borderColor: borderColor ? borderColor : COLORS.blue,
         },
       ]}>
       {loading ? (
@@ -74,7 +75,6 @@ const styles = RN.StyleSheet.create({
   buttonOutline: {
     backgroundColor: COLORS.transparent,
     borderWidth: 1,
-    borderColor: COLORS.blue,
   },
   buttonDisabled: {
     opacity: 0.4,

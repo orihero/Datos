@@ -35,7 +35,7 @@ export default observer(
           <RN.View style={styles.title}>
             <RN.Text children={topic.title} color={COLORS.white} size="h3" />
             <RN.Text
-              children={topic.description}
+              children={`${topic.followerIds?.length} Followers`}
               color={COLORS.textGray}
               size="h6"
             />
@@ -45,8 +45,9 @@ export default observer(
           title={isFollowed ? 'Following' : 'Follow'}
           width={80}
           height={45}
-          outline={isFollowed}
+          outline={true}
           onPress={onFollow}
+          borderColor={'transparent'}
         />
       </RN.View>
     );
@@ -64,7 +65,7 @@ const styles = RN.StyleSheet.create({
     height: normalizeHeight(50),
     width: normalizeWidth(50),
     backgroundColor: COLORS.dargGray,
-    borderRadius: 40,
+    borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

@@ -7,7 +7,7 @@ export default class TopicApi {
   static collection = firestore().collection('topics');
 
   static addTopic = async (topicData: Topic) =>
-    await this.collection.add({...topicData, createAt: Date.now()});
+    await this.collection.add({...topicData, createdAt: Date.now()});
 
   static followTopic = async (docId: string, topicData: Topic) =>
     this.collection.doc(docId).update(topicData);

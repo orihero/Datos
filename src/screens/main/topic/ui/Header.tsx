@@ -12,22 +12,20 @@ import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 export default observer(
   ({title, isTopics}: {title: string; isTopics: boolean}) => {
     const {paddingTop} = useAppViewInsets();
-    const {onClearPostData, state, onCreatePost, loadingWhenCreatePost} =
-      useRootStore().post;
+    const {state, onCreatePost, loadingWhenCreatePost} = useRootStore().post;
     const height = useMemo(
       () => normalizeHeight(25) + paddingTop,
       [paddingTop],
     );
 
     const goBackHandle = () => {
-      onClearPostData();
       NavigationService.goBack();
     };
 
     return (
       <RN.View style={[styles.header, {paddingTop: height}]}>
         <RN.TouchableOpacity style={styles.iconButton} onPress={goBackHandle}>
-          <ArrowLeftIcon size={24} color={COLORS.black} />
+          <ArrowLeftIcon size={24} color={COLORS.white} />
         </RN.TouchableOpacity>
         <RN.Text color={COLORS.white} size="h1">
           {title}
@@ -39,7 +37,7 @@ export default observer(
               width={80}
               height={40}
               loading={loadingWhenCreatePost.loading}
-              disabled={!state.newPostState.topics.length}
+              disabled={!state.newPostState.topic._id}
               onPress={onCreatePost}
             />
           </RN.View>
@@ -53,7 +51,10 @@ const styles = RN.StyleSheet.create({
   header: {
     flexDirection: 'row',
     paddingHorizontal: normalizeWidth(30),
-    paddingBottom: 5,
+    backgroundColor: COLORS.dargGray,
+    paddingBottom: 15,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
@@ -66,11 +67,13 @@ const styles = RN.StyleSheet.create({
     position: 'absolute',
     left: normalizeWidth(15),
     borderRadius: 40,
+    bottom: normalizeHeight(10),
   },
   nextBtn: {
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
     right: normalizeWidth(15),
+    bottom: normalizeHeight(10),
   },
 });

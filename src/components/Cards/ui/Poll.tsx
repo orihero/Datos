@@ -1,14 +1,14 @@
-import {useNavigation} from '@react-navigation/native';
 import RN from 'components/RN';
+import {observer} from 'mobx-react-lite';
 import React from 'react';
 import ArrowDownIcon from 'shared/assets/icons/ArrowDownIcon';
 import {MockUserPngImage} from 'shared/assets/images/mock';
 import {COLORS} from 'shared/constants/colors';
-import {HOME_STACK} from 'shared/navigation/routes';
+import {useRootStore} from 'shared/store/hooks/useRootStore';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 
-export default function Poll() {
-  const navigation = useNavigation();
+const Poll = () => {
+  const {state} = useRootStore().post;
 
   return (
     <RN.View style={styles.container}>
@@ -59,27 +59,11 @@ export default function Poll() {
           </RN.View>
         </RN.View>
       </RN.View>
-      <RN.View style={styles.answearsCommentViews}>
-        <RN.TouchableOpacity
-          onPress={() => navigation.navigate(HOME_STACK.ANSWEAR as never)}>
-          <RN.Text size="h4" font="Medium" color={COLORS.darkGray2}>
-            Answears:5
-          </RN.Text>
-        </RN.TouchableOpacity>
-        <RN.TouchableOpacity>
-          <RN.Text size="h4" font="Medium" color={COLORS.darkGray2}>
-            Comments: 10
-          </RN.Text>
-        </RN.TouchableOpacity>
-        <RN.TouchableOpacity>
-          <RN.Text size="h4" font="Medium" color={COLORS.darkGray2}>
-            Views: 20
-          </RN.Text>
-        </RN.TouchableOpacity>
-      </RN.View>
     </RN.View>
   );
-}
+};
+
+export default observer(Poll);
 
 const styles = RN.StyleSheet.create({
   container: {
@@ -139,7 +123,7 @@ const styles = RN.StyleSheet.create({
     transform: [{rotate: '180deg'}],
   },
   downButton: {},
-  answearsCommentViews: {
+  answersCommentViews: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: normalizeWidth(15),

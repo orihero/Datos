@@ -5,6 +5,7 @@ export const storage = new MMKV();
 
 export default class LocalStore {
   userId: string | null = null;
+  selectedInterest: string[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -15,6 +16,11 @@ export default class LocalStore {
     if (id) {
       this.setUserId(id);
     }
+
+    const interests = storage.getString('selectedInterest');
+    if (interests) {
+      this.setSelectedInterest(JSON.parse(interests));
+    }
   };
   setUserId = (id: string) => {
     this.userId = id;
@@ -24,5 +30,16 @@ export default class LocalStore {
   clearUserId = () => {
     this.userId = null;
     storage.delete('userId');
+  };
+
+  // selectedInterest uchun metodlar
+  setSelectedInterest = (interests: string[]) => {
+    this.selectedInterest = interests;
+    storage.set('selectedInterest', JSON.stringify(interests));
+  };
+
+  clearSelectedInterest = () => {
+    this.selectedInterest = [];
+    storage.delete('selectedInterest');
   };
 }

@@ -6,6 +6,7 @@ import TopicApi from 'shared/api/topic.api';
 import type {Asset} from 'react-native-image-picker';
 import NavigationService from 'shared/navigation/NavigationService';
 import Loading from 'shared/utils/Loading';
+import {nanoid} from 'nanoid/non-secure';
 
 export interface TopicStoreState {
   allTopics: Topic[];
@@ -74,7 +75,7 @@ export default class TopicStore {
   onCreateNewTopic = async () => {
     try {
       this.loadingWhenCreateTopic.show();
-      this.state.newTopicState._id = String(Date.now());
+      this.state.newTopicState._id = nanoid(10);
       this.state.newTopicState.userId = this.rootStore.local.userId as never;
       this.loadingWhenPutAvatar.show();
       const res = await StorageApi.uploadImage({
@@ -85,10 +86,7 @@ export default class TopicStore {
       await TopicApi.addTopic(this.state.newTopicState);
       const addedTopic = await TopicApi.getTopic(this.state.newTopicState._id);
       runInAction(() => {
-        this.rootStore.post.state.newPostState.topics = [
-          ...this.rootStore.post.state.newPostState.topics,
-          addedTopic as never,
-        ];
+        this.rootStore.post.state.newPostState.topic = addedTopic as never;
       });
       setTimeout(() => {
         this.loadingWhenCreateTopic.hide();
@@ -110,7 +108,7 @@ export default class TopicStore {
 
   onFollowToTopic = async (topic: Topic) => {
     try {
-      if (!topic.followerIds.includes(this.rootStore.local.userId as never)) {
+      if (!topic.followerIds?.includes(this.rootStore.local.userId as never)) {
         const newTopic = {
           ...topic,
           followerIds: [
@@ -119,6 +117,15 @@ export default class TopicStore {
           ],
         };
         await TopicApi.followTopic(topic.docId, newTopic);
+        const topicData = await TopicApi.getTopic(topic._id);
+        runInAction(() => {
+          const newData = this.rootStore.post.state.allPosts?.map(item =>
+            item.topicId === topicData?._id
+              ? {...item, topic: topicData}
+              : item,
+          );
+          this.rootStore.post.state.allPosts = newData as never;
+        });
       } else {
         const newTopic = {
           ...topic,
@@ -127,6 +134,15 @@ export default class TopicStore {
           ),
         };
         await TopicApi.followTopic(topic.docId, newTopic);
+        const topicData = await TopicApi.getTopic(topic._id);
+        runInAction(() => {
+          const newData = this.rootStore.post.state.allPosts?.map(item =>
+            item.topicId === topicData?._id
+              ? {...item, topic: topicData}
+              : item,
+          );
+          this.rootStore.post.state.allPosts = newData as never;
+        });
       }
     } catch (error) {
       console.log(['Error: onFollowToTopic'], error);
