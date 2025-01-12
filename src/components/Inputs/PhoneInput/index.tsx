@@ -12,6 +12,7 @@ export interface PhoneInputProps {
   inputValue: string;
   onChangeInputValue(value: string): void;
   onChangeCountry(country: ICountry): void;
+  placeholder?: string;
 }
 
 export const PhoneInput: FC<PhoneInputProps> = ({
@@ -19,19 +20,20 @@ export const PhoneInput: FC<PhoneInputProps> = ({
   inputValue,
   onChangeCountry,
   onChangeInputValue,
+  placeholder,
 }) => {
   return (
-    <RN.View>
+    <RN.View bgColor={COLORS.black}>
       <RNPhoneInput
         value={inputValue}
         modalDisabled
         onChangePhoneNumber={onChangeInputValue}
         selectedCountry={selectedCountry}
         onChangeSelectedCountry={onChangeCountry}
-        placeholderTextColor={addAlpha(COLORS.black, 0.6)}
+        placeholderTextColor={addAlpha(COLORS.white, 0.6)}
         defaultCountry="UZ"
         customCaret={<ArrowDownIcon size={0} color={COLORS.transparent} />}
-        placeholder="Enter number!"
+        placeholder={placeholder}
         modalStyles={{
           searchInput: styles.input,
         }}
@@ -72,7 +74,7 @@ const styles = RN.StyleSheet.create({
   callingCode: {
     fontFamily: FontFamily.Regular,
     fontSize: 16,
-    color: COLORS.black,
+    color: COLORS.white,
     paddingLeft: 26,
     paddingRight: 1,
     zIndex: 1,
@@ -81,16 +83,16 @@ const styles = RN.StyleSheet.create({
   input: {
     fontFamily: FontFamily.Regular,
     fontSize: 16,
-    color: COLORS.black,
+    color: COLORS.white,
     paddingVertical: 15,
     paddingHorizontal: 1,
-    borderTopRightRadius: 16,
-    borderBottomRightRadius: 16,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderRightWidth: 1,
-    borderColor: addAlpha(COLORS.black, 0.2),
-    backgroundColor: COLORS.white,
+    borderColor: COLORS.lightGray,
+    backgroundColor: COLORS.black,
   },
   flag: {
     padding: 0,
@@ -103,13 +105,13 @@ const styles = RN.StyleSheet.create({
   flagContainer: {
     paddingVertical: 15,
     paddingHorizontal: 16,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderLeftWidth: 1,
-    borderColor: addAlpha(COLORS.black, 0.2),
-    backgroundColor: COLORS.white,
+    borderColor: COLORS.lightGray,
+    backgroundColor: COLORS.black,
     zIndex: 2,
   },
   codeContainer: {},

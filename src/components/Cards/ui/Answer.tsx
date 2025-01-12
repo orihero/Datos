@@ -61,7 +61,7 @@ const Answer: FC<Props> = ({
   const renderSeparator = () => <Spacing height={15} />;
 
   return (
-    <RN.View style={styles.container}>
+    <RN.Pressable style={styles.container}>
       <RN.View style={styles.topBox}>
         <RN.View fd={'row'} jc={'space-between'} ai="center">
           <RN.View style={styles.userBox}>
@@ -72,26 +72,27 @@ const Answer: FC<Props> = ({
               />
             )}
             <RN.View>
-              <RN.Text color={COLORS.white} size="h4">
-                {answer?.user?.nickname}
-              </RN.Text>
-              <RN.Text color={COLORS.textGray} size="h6">
-                {timeSince(answer.createdAt)}
-              </RN.Text>
+              <RN.View fd={'row'} ai={'center'} g={5}>
+                <RN.Text color={COLORS.white} size="h4">
+                  {answer?.user?.nickname}
+                </RN.Text>
+                <RN.Text
+                  color={COLORS.textGray}
+                  size="h6"
+                  style={{alignSelf: 'flex-end'}}>
+                  {timeSince(answer.createdAt)}
+                </RN.Text>
+              </RN.View>
+              <RN.View fd={'row'} ai={'center'} g={5}>
+                <RN.Text color={COLORS.textGray} size="h6">
+                  {answer.user.level.level} Level
+                </RN.Text>
+                <RN.Text color={COLORS.textGray} size="h6">
+                  {answer.user.points} Points
+                </RN.Text>
+              </RN.View>
             </RN.View>
           </RN.View>
-          {postUserId === userId && (
-            <RN.TouchableOpacity onPress={onSelectTrueAnswerPress}>
-              {answer.isCorrect ? (
-                <CheckboxIcon size={20} color={COLORS.blue} />
-              ) : (
-                <RN.View style={styles.check} />
-              )}
-            </RN.TouchableOpacity>
-          )}
-          {postUserId !== userId && answer.isCorrect && (
-            <CheckboxIcon size={20} color={COLORS.blue} />
-          )}
         </RN.View>
         <RN.Text size="h2" font="Medium" color={COLORS.white}>
           {answer?.title}
@@ -128,9 +129,23 @@ const Answer: FC<Props> = ({
               />
             </RN.TouchableOpacity>
           </RN.View>
-          <RN.TouchableOpacity style={styles.item} onPress={onReplyBtnPress}>
-            <ReplyIcon size={20} color={COLORS.white} />
-          </RN.TouchableOpacity>
+          <RN.View fd={'row'} g={10} ai={'center'}>
+            {postUserId === userId && (
+              <RN.TouchableOpacity onPress={onSelectTrueAnswerPress}>
+                {answer.isCorrect ? (
+                  <CheckboxIcon size={30} color={COLORS.green} />
+                ) : (
+                  <RN.View style={styles.check} />
+                )}
+              </RN.TouchableOpacity>
+            )}
+            {postUserId !== userId && answer.isCorrect && (
+              <CheckboxIcon size={30} color={COLORS.green} />
+            )}
+            <RN.TouchableOpacity style={styles.item} onPress={onReplyBtnPress}>
+              <ReplyIcon size={20} color={COLORS.white} />
+            </RN.TouchableOpacity>
+          </RN.View>
         </RN.View>
         {answer?.comments?.length !== 0 && (
           <RN.View style={styles.comments}>
@@ -146,7 +161,7 @@ const Answer: FC<Props> = ({
           </RN.View>
         )}
       </RN.View>
-    </RN.View>
+    </RN.Pressable>
   );
 };
 
@@ -176,8 +191,8 @@ const styles = RN.StyleSheet.create({
     borderRadius: 45,
   },
   check: {
-    width: normalizeWidth(20),
-    height: normalizeHeight(20),
+    width: normalizeWidth(24),
+    height: normalizeHeight(24),
     borderRadius: 20,
     borderWidth: 1,
     borderColor: COLORS.textGray,

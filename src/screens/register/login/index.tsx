@@ -10,8 +10,14 @@ import {FontFamily} from 'shared/constants/fonts';
 import {useRegister} from 'shared/store/hooks/useRegister';
 import {addAlpha} from 'shared/utils/color';
 import GoogleIcon from 'shared/assets/icons/GoogleIcon';
+import {useTranslation} from 'react-i18next';
+import TripleHeader from 'components/TripleHeader/TripleHeader';
+import ArrowLeftIcon from 'shared/assets/icons/ArrowLeftIcon';
+import NavigationService from 'shared/navigation/NavigationService';
+import {Keyboard} from 'react-native';
 
 function LoginScreen() {
+  const {t} = useTranslation();
   const {
     state,
     onChangeOfLogin,
@@ -24,28 +30,40 @@ function LoginScreen() {
   const inputValue = state.login.input;
   const disabledButton = !inputValue;
   return (
-    <Container background={COLORS.white} isPaddingTop>
+    <Container
+      onPress={() => Keyboard.dismiss()}
+      Header={
+        <TripleHeader
+          title={`${t('login')}`}
+          leftItem={
+            <RN.TouchableOpacity onPress={() => NavigationService.goBack()}>
+              <ArrowLeftIcon color={COLORS.white} size={22} />
+            </RN.TouchableOpacity>
+          }
+        />
+      }>
       <RN.View style={styles.container}>
         <RN.Text size="h1" font="Bold">
-          Enter your mobile number!
+          {t('enter_phone_number')}
         </RN.Text>
         <Spacing steps={2} />
         <PhoneInput
           inputValue={inputValue}
           selectedCountry={state.login.country}
+          placeholder={`${t('enter_phone')}`}
           onChangeCountry={country => onChangeOfLogin('country', country)}
           onChangeInputValue={input => onChangeOfLogin('input', input)}
         />
         <Spacing steps={2} />
         <Button
-          title="Log In"
+          title={t('sign_in')}
           onPress={onLoginWithPhone}
           disabled={disabledButton}
           loading={loadingWhenLogIn.loading}
         />
         <Spacing steps={2} />
         <Button
-          title="Sign in with google"
+          title={t('sign_in_with_google')}
           onPress={onSignInWithGoogle}
           loading={loadingWhenGoogleLogIn.loading}
           icon={<GoogleIcon size={32} />}

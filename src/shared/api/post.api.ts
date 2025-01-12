@@ -3,9 +3,9 @@ import firestore, {
   query,
   where,
   orderBy,
-  onSnapshot,
+  getDocs,
 } from '@react-native-firebase/firestore';
-import {Post, AnswerType, CommentType} from '@types';
+import {Post, AnswerType, CommentType, ReportType} from '@types';
 import TopicApi from './topic.api';
 import UsersApi from './users.api';
 
@@ -13,9 +13,10 @@ export default class PostsApi {
   static collection = firestore().collection('posts');
   static answer = firestore().collection('answer');
   static comment = firestore().collection('comment');
+  static reports = firestore().collection('reports');
 
   static addPost = async (postData: Post) =>
-    await this.collection.add({...postData, createdAt: Date.now()});
+    await this.collection.add(postData);
 
   static updateViewPost = async (docId: string, postData: Partial<Post>) =>
     this.collection.doc(docId).update(postData);
@@ -39,13 +40,94 @@ export default class PostsApi {
     return result;
   };
 
-  static getAllPosts = (
+  static getMyPosts = (
+    userId: string,
     callback: (posts: Post[] | null) => void,
   ): (() => void) => {
-    const q = query(this.collection, orderBy('createdAt', 'desc'));
+    const q = query(
+      this.collection,
+      orderBy('createdAt', 'desc'),
+      where('userId', '==', userId),
+    );
 
-    const unsubscribe = onSnapshot(q, async (querySnapshot: any) => {
-      if (querySnapshot && !querySnapshot.empty) {
+    const unsubscribe = q.onSnapshot(
+      async (querySnapshot: {empty: any; docs: any[]}) => {
+        if (querySnapshot && !querySnapshot.empty) {
+          const posts = await Promise.all(
+            querySnapshot.docs.map(async doc => {
+              const data = doc.data();
+              let topic = null;
+
+              try {
+                topic = await TopicApi.getTopic(data.topicId);
+              } catch (error) {
+                console.error('[Error-getMyPosts]:', error);
+              }
+
+              return {
+                ...data,
+                docId: doc.id,
+                topic: topic ? topic : null,
+              } as Post;
+            }),
+          );
+          callback(posts);
+        } else {
+          callback(null);
+        }
+      },
+    );
+
+    return unsubscribe;
+  };
+
+  static getMyAnswers = (
+    userId: string,
+    callback: (answers: AnswerType[] | null) => void,
+  ): (() => void) => {
+    const q = query(
+      this.answer,
+      orderBy('createdAt', 'desc'),
+      where('userId', '==', userId),
+    );
+
+    const unsubscribe = q.onSnapshot(
+      async (querySnapshot: {empty: any; docs: any[]}) => {
+        if (querySnapshot && !querySnapshot.empty) {
+          const answers = await Promise.all(
+            querySnapshot.docs.map(async doc => {
+              const data = doc.data();
+              let userData = null;
+
+              try {
+                userData = await UsersApi.getUser(data.userId);
+              } catch (error) {
+                console.error('[Error-getPostAnswers]:', error);
+              }
+
+              return {
+                ...data,
+                docId: doc.id,
+                user: userData ? userData : null,
+              } as AnswerType;
+            }),
+          );
+          callback(answers);
+        } else {
+          callback(null);
+        }
+      },
+    );
+
+    return unsubscribe;
+  };
+
+  static getAllPosts = async (): Promise<Post[] | null> => {
+    try {
+      const q = query(this.collection, orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
         const posts = await Promise.all(
           querySnapshot.docs.map(async (doc: any) => {
             const data = doc.data();
@@ -68,21 +150,70 @@ export default class PostsApi {
           }),
         );
 
-        callback(posts as never);
+        return posts;
       } else {
-        callback(null);
+        return null;
       }
-    });
+    } catch (error) {
+      console.error('[Error-getAllPosts]:', error);
+      return null;
+    }
+  };
 
-    return unsubscribe;
+  static getUserFollowedTopicsPosts = async (
+    userId: string,
+  ): Promise<Post[] | null> => {
+    try {
+      const q = query(this.collection, orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const posts = await Promise.all(
+          querySnapshot.docs.map(async (doc: any) => {
+            const data = doc.data();
+            let topicData = null;
+            let userData = null;
+
+            try {
+              // Topic ma'lumotlarini olish
+              topicData = await TopicApi.getTopic(data.topicId);
+
+              // Faqat followerIds ichida userId bor bo'lsa postni qo'shamiz
+              if (
+                topicData?.followerIds &&
+                topicData.followerIds.includes(userId)
+              ) {
+                userData = await UsersApi.getUser(data.userId);
+                return {
+                  ...data,
+                  docId: doc.id,
+                  topic: topicData,
+                  user: userData,
+                };
+              }
+            } catch (error) {
+              console.error('[Error-getTopic]:', error);
+            }
+
+            return null; // Agar followerIds ichida userId bo'lmasa, null qaytaradi
+          }),
+        );
+
+        // Faqat null bo'lmagan postlarni qaytarish
+        return posts.filter((post: any) => post !== null) as Post[];
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('[Error-getUserPosts]:', error);
+      return null;
+    }
   };
 
   //answers
 
   static addAnswer = async (answerData: AnswerType) => {
-    console.log('answerData', answerData);
-
-    await this.answer.add({...answerData, createdAt: Date.now()});
+    await this.answer.add(answerData);
   };
 
   static getPostAnswers = (
@@ -91,8 +222,8 @@ export default class PostsApi {
   ): (() => void) => {
     const q = query(
       this.answer,
-      where('postId', '==', postId),
       orderBy('createdAt', 'desc'),
+      where('postId', '==', postId),
     );
 
     const unsubscribe = q.onSnapshot(
@@ -138,11 +269,11 @@ export default class PostsApi {
   //comments
 
   static addCommnetToAnswer = async (commentData: CommentType) => {
-    await this.comment.add({...commentData, createdAt: Date.now()});
+    await this.comment.add(commentData);
   };
 
   static addCommnetToPost = async (commentData: CommentType) => {
-    await this.comment.add({...commentData, createdAt: Date.now()});
+    await this.comment.add(commentData);
   };
 
   static getPostComments = (
@@ -151,12 +282,16 @@ export default class PostsApi {
   ): (() => void) => {
     const q = query(
       this.comment,
-      where('answerId', '==', id),
       orderBy('createdAt', 'desc'),
+      where('answerId', '==', id),
     );
 
     const unsubscribe = q.onSnapshot(
       async (querySnapshot: {empty: any; docs: any[]}) => {
+        console.log(
+          'Snapshot received:',
+          querySnapshot?.docs.map(doc => doc.data()),
+        );
         if (querySnapshot && !querySnapshot.empty) {
           const comments = await Promise.all(
             querySnapshot.docs.map(async doc => {
@@ -222,5 +357,10 @@ export default class PostsApi {
       console.error('[Error-getCommentsForAnswer]:', error);
       return null;
     }
+  };
+
+  //reports
+  static addReport = async (reportData: ReportType) => {
+    await this.reports.add(reportData);
   };
 }

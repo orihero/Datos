@@ -14,6 +14,9 @@ export function Button({
   height,
   width,
   borderColor,
+  backColor,
+  textSize,
+  justifyContent,
 }: {
   title: string;
   onPress?: () => void;
@@ -24,6 +27,9 @@ export function Button({
   height?: number;
   width?: any;
   borderColor?: string;
+  backColor?: string;
+  textSize?: string;
+  justifyContent?: any;
 }) {
   return (
     <RN.TouchableOpacity
@@ -38,6 +44,12 @@ export function Button({
           height: height ? height : 50,
           width: width ? width : '100%',
           borderColor: borderColor ? borderColor : COLORS.blue,
+          justifyContent: justifyContent ? justifyContent : 'center',
+          backgroundColor: backColor
+            ? backColor
+            : outline
+            ? COLORS.transparent
+            : COLORS.blue,
         },
       ]}>
       {loading ? (
@@ -47,6 +59,7 @@ export function Button({
         />
       ) : (
         <RN.Text
+          size={textSize as never}
           style={[
             styles.buttonText,
             {color: outline ? COLORS.blue : COLORS.white},
@@ -65,9 +78,9 @@ const styles = RN.StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 16,
-    gap: 10,
+    borderRadius: 10,
+    gap: 12,
+    paddingHorizontal: 10,
   },
   buttonPrimary: {
     backgroundColor: COLORS.blue,

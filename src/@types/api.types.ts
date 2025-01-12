@@ -1,27 +1,51 @@
 export type User = {
   _id: string;
+  uid: string;
   createdAt: number;
   email: string;
   firstName: string;
   lastName: string;
   nickname: string;
   userImageUrl: string;
+  gender: string;
   docId: string;
   followerIds: string[];
   interests: string[];
+  postsIds: string[];
+  answersIds: string[];
+  points: number;
+  level: {
+    level: number;
+    upOrDownVote: number;
+    period: number;
+    createdAt: number;
+  };
+  usedVotes: number;
 };
 
 export const UserInitial: User = {
   _id: '',
+  uid: '',
   createdAt: 0,
   email: '',
   firstName: '',
   lastName: '',
   nickname: '',
   userImageUrl: '',
+  gender: '',
   docId: '',
   followerIds: [],
   interests: [],
+  postsIds: [],
+  answersIds: [],
+  points: 0,
+  level: {
+    level: 0,
+    upOrDownVote: 0,
+    period: 0,
+    createdAt: 0,
+  },
+  usedVotes: 0,
 };
 
 export type PollOptionType = {
@@ -51,6 +75,7 @@ export type Post = {
   userId: string;
   topicId: string;
   createdAt: number;
+  rate: number;
   type: string;
   title: string;
   body: string;
@@ -64,8 +89,7 @@ export type Post = {
   pollVotedUserIds: string[];
   votesCount: number;
   status: string;
-  answersCount: number;
-  comentsCount: number;
+  commentsCount: number;
   anwerUserIds: string[];
   commentUserIds: string[];
   viewUserIds: string[];
@@ -79,6 +103,7 @@ export const PostInitial: Post = {
   userId: '',
   docId: '',
   topicId: '',
+  rate: 0,
   type: 'Question',
   title: '',
   body: '',
@@ -92,8 +117,7 @@ export const PostInitial: Post = {
   pollVotedUserIds: [],
   votesCount: 0,
   status: 'PENDING',
-  answersCount: 0,
-  comentsCount: 0,
+  commentsCount: 0,
   viewUserIds: [],
   anwerUserIds: [],
   commentUserIds: [],
@@ -110,6 +134,23 @@ export type Topic = {
   avatar: string;
   followerIds: string[];
   docId: string;
+  category: string;
+  postIds: string[];
+};
+
+export type SortType = {
+  byDate: boolean;
+  byVotes: boolean;
+  byViews: boolean;
+  bycomments: boolean;
+  byFollowers: boolean;
+};
+export const SortTypeInitial = {
+  byDate: false,
+  byVotes: false,
+  byViews: false,
+  bycomments: false,
+  byFollowers: false,
 };
 
 export const TopicInitial: Topic = {
@@ -121,6 +162,8 @@ export const TopicInitial: Topic = {
   avatar: '',
   followerIds: [],
   docId: '',
+  category: '',
+  postIds: [],
 };
 
 export type AnswerType = {
@@ -177,4 +220,30 @@ export const CommentInitial: CommentType = {
   title: '',
   user: {} as never,
   isCommentForAnswer: false,
+};
+
+export type InterestType = {
+  img: string;
+  name: string;
+};
+
+export const InterestInitial = {
+  img: '',
+  name: '',
+};
+
+export type ReportType = {
+  id: string;
+  postId: string;
+  userId: string;
+  createdAt: number;
+  message: string;
+};
+
+export const ReportInitial = {
+  id: '',
+  postId: '',
+  userId: '',
+  createdAt: 0,
+  message: '',
 };

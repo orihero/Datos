@@ -4,6 +4,7 @@ import HomeIcon from 'shared/assets/icons/HomeIcon';
 import WalletIcon from 'shared/assets/icons/WalletIcon';
 import GraphIcon from 'shared/assets/icons/GraphIcon';
 import UserIcon from 'shared/assets/icons/UserIcon';
+import SearchIcon from 'shared/assets/icons/SearchIcon';
 
 export const bottomBarOptions: BottomBarOptions = {
   options: {
@@ -13,19 +14,23 @@ export const bottomBarOptions: BottomBarOptions = {
   },
   list: [
     {
-      label: 'Home',
+      label: 'home',
       route: BOTTOM_BAR_STACK.HOME,
     },
     {
-      label: 'Wallet',
-      route: BOTTOM_BAR_STACK.WALLET,
+      label: 'explore',
+      route: BOTTOM_BAR_STACK.EXPLORE,
     },
+    // {
+    //   label: 'Wallet',
+    //   route: BOTTOM_BAR_STACK.WALLET,
+    // },
+    // {
+    //   label: 'Statistics',
+    //   route: BOTTOM_BAR_STACK.STATISTICS,
+    // },
     {
-      label: 'Statistics',
-      route: BOTTOM_BAR_STACK.STATISTICS,
-    },
-    {
-      label: 'Profile',
+      label: 'profile',
       route: BOTTOM_BAR_STACK.PROFILE,
     },
   ],
@@ -36,4 +41,5 @@ export const BottomBarIcons = {
   [BOTTOM_BAR_STACK.WALLET]: WalletIcon,
   [BOTTOM_BAR_STACK.STATISTICS]: GraphIcon,
   [BOTTOM_BAR_STACK.PROFILE]: UserIcon,
+  [BOTTOM_BAR_STACK.EXPLORE]: SearchIcon,
 };

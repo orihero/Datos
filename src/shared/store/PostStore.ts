@@ -7,7 +7,10 @@ import {
   CommentType,
   Post,
   PostInitial,
+  ReportInitial,
+  ReportType,
   Topic,
+  User,
 } from '@types';
 import PostsApi from 'shared/api/post.api';
 import Loading from 'shared/utils/Loading';
@@ -17,6 +20,8 @@ import type {Asset} from 'react-native-image-picker';
 import StorageApi from 'shared/api/storage.api';
 import {nanoid} from 'nanoid/non-secure';
 import UsersApi from 'shared/api/users.api';
+import TopicApi from 'shared/api/topic.api';
+import _ from 'lodash';
 
 export interface PostStoreState {
   newPostState: Post;
@@ -27,10 +32,16 @@ export interface PostStoreState {
   postComments: CommentType[];
   postId: string;
   allPosts: Post[];
+  allPostsClonse: Post[];
   previewPost: Post;
   postType: string;
   replyComment: CommentType;
   isReply: boolean;
+  reportMessage: ReportType;
+  reportLoading: boolean;
+  isLoading: boolean;
+  isLoadingHome: boolean;
+  joinedPosts: Post[];
 }
 
 const initialState: PostStoreState = {
@@ -42,10 +53,16 @@ const initialState: PostStoreState = {
   postComments: [],
   postId: '',
   allPosts: [],
+  allPostsClonse: [],
   previewPost: {} as never,
   postType: '',
   replyComment: CommentInitial as never,
   isReply: false,
+  reportMessage: ReportInitial,
+  reportLoading: false,
+  isLoading: false,
+  isLoadingHome: false,
+  joinedPosts: [],
 };
 
 export default class PostStore {
@@ -57,19 +74,53 @@ export default class PostStore {
     makeAutoObservable(this);
     this.rootStore = root;
     this.fetchAllPost();
+    this.fetchJoinedPost(this.rootStore.local.userId as never);
   }
 
   //post
 
   fetchAllPost = async () => {
     try {
-      PostsApi.getAllPosts(snapshot => {
-        runInAction(() => {
-          this.state.allPosts = snapshot as never;
-        });
+      runInAction(() => {
+        this.state.isLoading = true;
+      });
+
+      const res = await PostsApi.getAllPosts();
+      const sortedAndRandomizedPosts = _.shuffle(
+        res?.sort((a, b) => b.rate - a.rate),
+      );
+      runInAction(() => {
+        this.state.allPosts = sortedAndRandomizedPosts as never;
+        this.state.allPostsClonse = sortedAndRandomizedPosts as never;
+        this.state.isLoading = false;
       });
     } catch (err) {
       console.log(['Error: fetchAllTopics', err]);
+      runInAction(() => {
+        this.state.isLoading = false;
+      });
+    }
+  };
+
+  fetchJoinedPost = async (uid: string) => {
+    try {
+      runInAction(() => {
+        this.state.isLoadingHome = true;
+      });
+
+      const res = await PostsApi.getUserFollowedTopicsPosts(uid);
+      const sortedAndRandomizedPosts = _.shuffle(
+        res?.sort((a, b) => b.rate - a.rate),
+      );
+      runInAction(() => {
+        this.state.joinedPosts = sortedAndRandomizedPosts as never;
+        this.state.isLoadingHome = false;
+      });
+    } catch (err) {
+      console.log(['Error: fetchAllTopics', err]);
+      runInAction(() => {
+        this.state.isLoadingHome = false;
+      });
     }
   };
 
@@ -88,7 +139,7 @@ export default class PostStore {
 
   onSelectNewPostMediaUrl = (file: Asset) => {
     runInAction(() => {
-      this.state.newPostMediaUrl = file;
+      this.state.newPostMediaUrl = {...file, type: file.type?.split('/')[0]};
     });
   };
 
@@ -101,13 +152,28 @@ export default class PostStore {
   onCreatePost = async () => {
     try {
       this.loadingWhenCreatePost.show();
-      this.state.newPostState = {
-        ...this.state.newPostState,
-        _id: nanoid(10),
-        topicId: this.state.newPostState?.topic._id,
-        topic: {} as never,
-        userId: this.rootStore.local.userId as never,
-      };
+
+      let user: User = (await UsersApi.getUser(
+        this.rootStore.local.userId as never,
+      )) as never;
+      if (!user || !user._id) {
+        throw new Error('User not found');
+      }
+      runInAction(() => {
+        this.state.newPostState = {
+          ...this.state.newPostState,
+          _id: nanoid(10),
+          topicId: this.state.newPostState?.topic._id,
+          userId: this.rootStore.local.userId as never,
+          createdAt: Date.now(),
+        };
+      });
+
+      user.postsIds.unshift(this.state.newPostState._id);
+
+      this.state.newPostState?.topic?.postIds?.unshift(
+        this.state.newPostState?._id,
+      );
 
       if (this.state.newPostMediaUrl.uri) {
         const uploadedMedia = await StorageApi.uploadImage({
@@ -120,11 +186,17 @@ export default class PostStore {
         });
       }
       if (this.state.newPostState.type !== 'Poll') {
-        this.state.newPostState.pollEndDays = null as never;
-        this.state.newPostState.pollOptions = null as never;
+        runInAction(() => {
+          this.state.newPostState.pollEndDays = null as never;
+          this.state.newPostState.pollOptions = null as never;
+        });
       }
-      await PostsApi.addPost(this.state.newPostState);
-
+      await PostsApi.addPost({...this.state.newPostState, topic: {} as never});
+      await TopicApi.updateTopic(
+        this.state.newPostState.topic.docId,
+        this.state.newPostState.topic,
+      );
+      await UsersApi.updateUser(user.docId, user);
       setTimeout(() => {
         this.loadingWhenCreatePost.hide();
         NavigationService.navigate(ROOT_STACK.HOME);
@@ -159,7 +231,11 @@ export default class PostStore {
     });
   };
 
-  getPostById = async (postId: string, postType: string) => {
+  getPostById = async (
+    postId: string,
+    postType: string,
+    callback?: boolean,
+  ) => {
     runInAction(() => {
       this.state.postId = postId;
       this.state.postType = postType;
@@ -175,15 +251,32 @@ export default class PostStore {
       });
 
       setTimeout(() => {
-        NavigationService.navigate(HOME_STACK.ANSWER);
+        callback && NavigationService.navigate(HOME_STACK.ANSWER);
       }, 200);
-      this.fetchAnswersOfPost(this.state.previewPost._id);
-      this.fetchCommentsOfPost(this.state.previewPost._id);
+      this.fetchAnswersOfPost(postId);
+      this.fetchCommentsOfPost(postId);
       if (onePost.viewUserIds?.includes(userId)) {
         return;
       } else {
         const newUserIds = [...onePost.viewUserIds, userId];
-        this.state.previewPost.viewUserIds = newUserIds;
+        runInAction(() => {
+          this.state.previewPost.viewUserIds = newUserIds;
+        });
+        if (
+          this.state.previewPost.userId !==
+          (this.rootStore.local.userId as never)
+        ) {
+          runInAction(() => {
+            this.state.previewPost.user.points += 10;
+            this.state.previewPost.rate += 0.5;
+          });
+          console.log('ishladi', this.state.previewPost.user.points);
+
+          await UsersApi.updateUser(
+            this.state.previewPost.user.docId,
+            this.state.previewPost.user,
+          );
+        }
         await PostsApi.updateViewPost(onePost.docId, {
           ...onePost,
           viewUserIds: newUserIds,
@@ -219,95 +312,183 @@ export default class PostStore {
   onUpVote = async (post: Post) => {
     let postData = post;
     try {
-      if (
-        !postData.upVoteUserIds?.includes(this.rootStore.local.userId as never)
-      ) {
-        postData.upVoteUserIds = [
-          ...postData.upVoteUserIds,
-          this.rootStore.local.userId,
-        ] as never;
+      if (postData.userId !== (this.rootStore.local.userId as never)) {
         if (
-          postData.downVoteUserIds?.includes(
+          !postData.upVoteUserIds?.includes(
             this.rootStore.local.userId as never,
           )
         ) {
-          postData.downVoteUserIds = postData.downVoteUserIds.filter(
+          postData.upVoteUserIds = [
+            ...postData.upVoteUserIds,
+            this.rootStore.local.userId,
+          ] as never;
+          if (
+            postData.downVoteUserIds?.includes(
+              this.rootStore.local.userId as never,
+            )
+          ) {
+            runInAction(() => {
+              postData.downVoteUserIds = postData.downVoteUserIds.filter(
+                item => item !== this.rootStore.local.userId,
+              );
+              postData.user.points += 100;
+              this.rootStore.user.state.userState.usedVotes -= 1;
+            });
+          }
+
+          postData.votesCount =
+            postData.upVoteUserIds.length - postData.downVoteUserIds.length;
+          postData.rate += 1;
+
+          await PostsApi.updateViewPost(postData.docId, {
+            ...postData,
+            user: {} as never,
+            topic: {} as never,
+            comments: [] as never,
+          });
+
+          this.getUpdateChanges(postData._id);
+
+          runInAction(() => {
+            postData.user.points += 100;
+          });
+
+          await UsersApi.updateUser(postData.user.docId, postData.user);
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes += 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
+        } else {
+          postData.upVoteUserIds = postData.upVoteUserIds.filter(
             item => item !== this.rootStore.local.userId,
           );
+          postData.votesCount =
+            postData.upVoteUserIds.length - postData.downVoteUserIds.length;
+
+          await PostsApi.updateViewPost(postData.docId, {
+            ...postData,
+            user: {} as never,
+            topic: {} as never,
+            comments: [] as never,
+          });
+          this.getUpdateChanges(postData._id);
+
+          runInAction(() => {
+            postData.user.points -= 100;
+          });
+
+          await UsersApi.updateUser(postData.user.docId, postData.user);
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes -= 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
         }
-
-        postData.votesCount =
-          postData.upVoteUserIds.length - postData.downVoteUserIds.length;
-
-        await PostsApi.updateViewPost(postData.docId, {
-          ...postData,
-          user: {} as never,
-          topic: {} as never,
-          comments: [] as never,
-        });
-        this.getUpdateChanges(postData._id);
-      } else {
-        postData.upVoteUserIds = postData.upVoteUserIds.filter(
-          item => item !== this.rootStore.local.userId,
-        );
-        postData.votesCount =
-          postData.upVoteUserIds.length - postData.downVoteUserIds.length;
-
-        await PostsApi.updateViewPost(postData.docId, {
-          ...postData,
-          user: {} as never,
-          topic: {} as never,
-          comments: [] as never,
-        });
-        this.getUpdateChanges(postData._id);
+        this.rootStore.visible.show('alert');
       }
     } catch (error) {
       console.log(['Error: onUpVote', error]);
+    } finally {
+      setTimeout(() => {
+        this.rootStore.visible.hide('alert');
+      }, 3000);
     }
   };
 
   donwVote = async (post: Post) => {
     let postData = post;
     try {
-      if (
-        !postData.downVoteUserIds?.includes(
-          this.rootStore.local.userId as never,
-        )
-      ) {
-        postData.downVoteUserIds = [
-          ...postData.downVoteUserIds,
-          this.rootStore.local.userId,
-        ] as never;
+      if (postData.userId !== (this.rootStore.local.userId as never)) {
         if (
-          postData.upVoteUserIds?.includes(this.rootStore.local.userId as never)
+          !postData.downVoteUserIds?.includes(
+            this.rootStore.local.userId as never,
+          )
         ) {
-          postData.upVoteUserIds = postData.upVoteUserIds.filter(
+          postData.downVoteUserIds = [
+            ...postData.downVoteUserIds,
+            this.rootStore.local.userId,
+          ] as never;
+          if (
+            postData.upVoteUserIds?.includes(
+              this.rootStore.local.userId as never,
+            )
+          ) {
+            runInAction(() => {
+              postData.upVoteUserIds = postData.upVoteUserIds.filter(
+                item => item !== this.rootStore.local.userId,
+              );
+              postData.user.points -= 10;
+              this.rootStore.user.state.userState.usedVotes -= 1;
+            });
+          }
+
+          postData.votesCount =
+            postData.upVoteUserIds.length - postData.downVoteUserIds.length;
+
+          await PostsApi.updateViewPost(post.docId, {
+            ...postData,
+            user: {} as never,
+            topic: {} as never,
+            comments: [] as never,
+          });
+          this.getUpdateChanges(postData._id);
+
+          runInAction(() => {
+            postData.user.points -= 10;
+          });
+
+          await UsersApi.updateUser(postData.user.docId, postData.user);
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes += 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
+        } else {
+          postData.downVoteUserIds = postData.downVoteUserIds.filter(
             item => item !== this.rootStore.local.userId,
           );
+          postData.votesCount =
+            postData.upVoteUserIds.length - postData.downVoteUserIds.length;
+
+          runInAction(() => {
+            postData.user.points += 10;
+            this.rootStore.user.state.userState.usedVotes -= 1;
+          });
+
+          await PostsApi.updateViewPost(postData.docId, {
+            ...postData,
+            user: {} as never,
+            topic: {} as never,
+            comments: [],
+          });
+
+          this.getUpdateChanges(postData._id);
+
+          await UsersApi.updateUser(postData.user.docId, postData.user);
+
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
         }
-
-        postData.votesCount =
-          postData.upVoteUserIds.length - postData.downVoteUserIds.length;
-
-        await PostsApi.updateViewPost(post.docId, {
-          ...postData,
-          user: {} as never,
-          topic: {} as never,
-          comments: [] as never,
-        });
-        this.getUpdateChanges(postData._id);
-      } else {
-        postData.downVoteUserIds = postData.downVoteUserIds.filter(
-          item => item !== this.rootStore.local.userId,
-        );
-        postData.votesCount =
-          postData.upVoteUserIds.length - postData.downVoteUserIds.length;
-
-        await PostsApi.updateViewPost(postData.docId, postData);
-        this.getUpdateChanges(postData._id);
+        this.rootStore.visible.show('alert');
       }
     } catch (error) {
       console.log(['Error: downVote'], error);
+    } finally {
+      setTimeout(() => {
+        this.rootStore.visible.hide('alert');
+      }, 3000);
     }
   };
 
@@ -328,9 +509,9 @@ export default class PostStore {
 
   onCreateNewAnswer = async () => {
     try {
-      const user = await UsersApi.getUser(
-        this.state.previewPost.userId as never,
-      );
+      let user: User = (await UsersApi.getUser(
+        this.rootStore.local.userId as never,
+      )) as never;
       if (!user || !user._id) {
         throw new Error('User not found');
       }
@@ -342,19 +523,25 @@ export default class PostStore {
           postId: this.state.previewPost._id,
           type: 'answer',
           isCorrect: false,
-          userId: this.state.previewPost.userId,
+          userId: user.uid as never,
           user: user as never,
+          createdAt: Date.now(),
         };
+
+        user.answersIds.unshift(this.state.newAnswerState._id);
+
         if (!this.state.postAnswers) {
           this.state.postAnswers = [];
         }
-        this.state.postAnswers.unshift({
-          ...this.state.newAnswerState,
-        }) as never;
+        this.state.postAnswers = [
+          this.state.newAnswerState,
+          ...this.state.postAnswers,
+        ];
 
         this.state.previewPost = {
           ...this.state.previewPost,
-          answersCount: this.state.previewPost.answersCount + 1,
+          commentsCount: this.state.previewPost.commentsCount + 1,
+          rate: this.state.previewPost.rate + 0.3,
         };
       });
 
@@ -369,6 +556,8 @@ export default class PostStore {
         topic: {} as never,
         comments: [],
       });
+
+      await UsersApi.updateUser(user.docId, user);
 
       this.onClearAnswerState();
       this.clearReplyCommentState();
@@ -404,6 +593,19 @@ export default class PostStore {
                 comments: item.comments,
               };
         }) as never;
+
+        this.state.previewPost = {
+          ...this.state.previewPost,
+          commentsCount: this.state.previewPost.commentsCount + 1,
+          rate: this.state.previewPost.rate + 0.3,
+        };
+      });
+
+      await PostsApi.updateViewPost(this.state.previewPost.docId, {
+        ...this.state.previewPost,
+        user: {} as never,
+        topic: {} as never,
+        comments: [],
       });
 
       this.onClearAnswerState();
@@ -435,87 +637,176 @@ export default class PostStore {
 
   onUpVoteAnswer = async (answer: AnswerType) => {
     let answerData = answer;
+
     try {
-      if (
-        !answerData.upVoteUserIds?.includes(
-          this.rootStore.local.userId as never,
-        )
-      ) {
-        answerData.upVoteUserIds = [
-          ...answerData.upVoteUserIds,
-          this.rootStore.local.userId,
-        ] as never;
+      if (answerData.userId !== (this.rootStore.local.userId as never)) {
         if (
-          answerData.downVoteUserIds?.includes(
+          !answerData.upVoteUserIds?.includes(
             this.rootStore.local.userId as never,
           )
         ) {
-          answerData.downVoteUserIds = answerData.downVoteUserIds.filter(
+          answerData.upVoteUserIds = [
+            ...answerData.upVoteUserIds,
+            this.rootStore.local.userId,
+          ] as never;
+          if (
+            answerData.downVoteUserIds?.includes(
+              this.rootStore.local.userId as never,
+            )
+          ) {
+            answerData.downVoteUserIds = answerData.downVoteUserIds.filter(
+              item => item !== this.rootStore.local.userId,
+            );
+            answerData.user.points += 10;
+            this.rootStore.user.state.userState.usedVotes -= 1;
+          }
+
+          answerData.votesCount =
+            answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
+
+          if (answerData.userId !== (this.rootStore.local.userId as never)) {
+            runInAction(() => {
+              answerData.user.points += 10;
+            });
+            // console.log('ishladi', answerData.user.points);
+
+            await UsersApi.updateUser(answerData.user.docId, answerData.user);
+          }
+
+          await PostsApi.updatePostAnswer(answerData.docId, {
+            ...answerData,
+            comments: [],
+            user: {} as never,
+          });
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes += 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
+        } else {
+          answerData.upVoteUserIds = answerData.upVoteUserIds.filter(
             item => item !== this.rootStore.local.userId,
           );
+          answerData.votesCount =
+            answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
+
+          runInAction(() => {
+            answerData.user.points -= 10;
+          });
+
+          await UsersApi.updateUser(answerData.user.docId, answerData.user);
+
+          await PostsApi.updatePostAnswer(answerData.docId, {
+            ...answerData,
+            comments: [],
+            user: {} as never,
+          });
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes -= 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
         }
-
-        answerData.votesCount =
-          answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
-
-        await PostsApi.updatePostAnswer(answerData.docId, {
-          ...answerData,
-          comments: [],
-        });
-      } else {
-        answerData.upVoteUserIds = answerData.upVoteUserIds.filter(
-          item => item !== this.rootStore.local.userId,
-        );
-        answerData.votesCount =
-          answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
-
-        await PostsApi.updatePostAnswer(answerData.docId, {
-          ...answerData,
-          comments: [],
-        });
+        this.rootStore.visible.show('alert');
       }
     } catch (error) {
       console.log(['Error: onUpVote', error]);
+    } finally {
+      setTimeout(() => {
+        this.rootStore.visible.hide('alert');
+      }, 3000);
     }
   };
 
   donwVoteAnswer = async (answer: AnswerType) => {
     let answerData = answer;
+
     try {
-      if (
-        !answerData.downVoteUserIds?.includes(
-          this.rootStore.local.userId as never,
-        )
-      ) {
-        answerData.downVoteUserIds = [
-          ...answerData.downVoteUserIds,
-          this.rootStore.local.userId,
-        ] as never;
+      if (answerData.userId !== (this.rootStore.local.userId as never)) {
         if (
-          answerData.upVoteUserIds?.includes(
+          !answerData.downVoteUserIds?.includes(
             this.rootStore.local.userId as never,
           )
         ) {
-          answerData.upVoteUserIds = answerData.upVoteUserIds.filter(
+          answerData.downVoteUserIds = [
+            ...answerData.downVoteUserIds,
+            this.rootStore.local.userId,
+          ] as never;
+          if (
+            answerData.upVoteUserIds?.includes(
+              this.rootStore.local.userId as never,
+            )
+          ) {
+            answerData.upVoteUserIds = answerData.upVoteUserIds.filter(
+              item => item !== this.rootStore.local.userId,
+            );
+            answerData.user.points -= 10;
+            this.rootStore.user.state.userState.usedVotes -= 1;
+          }
+
+          answerData.votesCount =
+            answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
+
+          runInAction(() => {
+            answerData.user.points -= 10;
+          });
+
+          await UsersApi.updateUser(answerData.user.docId, answerData.user);
+
+          await PostsApi.updatePostAnswer(answerData.docId, {
+            ...answerData,
+            user: {} as never,
+            comments: [],
+          });
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes += 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
+        } else {
+          answerData.downVoteUserIds = answerData.downVoteUserIds.filter(
             item => item !== this.rootStore.local.userId,
           );
+          answerData.votesCount =
+            answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
+
+          runInAction(() => {
+            answerData.user.points += 10;
+          });
+
+          await UsersApi.updateUser(answerData.user.docId, answerData.user);
+
+          await PostsApi.updatePostAnswer(answerData.docId, {
+            ...answerData,
+            user: {} as never,
+            comments: [],
+          });
+
+          runInAction(() => {
+            this.rootStore.user.state.userState.usedVotes -= 1;
+          });
+          await UsersApi.updateUser(
+            this.rootStore.user.state.userState.docId,
+            this.rootStore.user.state.userState,
+          );
         }
-
-        answerData.votesCount =
-          answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
-
-        await PostsApi.updatePostAnswer(answerData.docId, answerData);
-      } else {
-        answerData.downVoteUserIds = answerData.downVoteUserIds.filter(
-          item => item !== this.rootStore.local.userId,
-        );
-        answerData.votesCount =
-          answerData.upVoteUserIds.length - answerData.downVoteUserIds.length;
-
-        await PostsApi.updatePostAnswer(answerData.docId, answerData);
+        this.rootStore.visible.show('alert');
       }
     } catch (error) {
       console.log(['Error: downVote'], error);
+    } finally {
+      setTimeout(() => {
+        this.rootStore.visible.hide('alert');
+      }, 3000);
     }
   };
 
@@ -531,9 +822,12 @@ export default class PostStore {
             : item;
         });
       });
-      console.log('answer', answer);
 
-      await PostsApi.updatePostAnswer(answer.docId, answer);
+      await PostsApi.updatePostAnswer(answer.docId, {
+        ...answer,
+        user: {} as never,
+        comments: [],
+      });
     } catch (error) {
       console.log(['Error: onSelectTrueAnswer'], error);
     }
@@ -543,9 +837,12 @@ export default class PostStore {
 
   fetchCommentsOfPost = (answerId: string) => {
     try {
+      console.log('answerId', answerId);
+
       PostsApi.getPostComments(answerId, snapshot => {
         runInAction(() => {
           this.state.postComments = snapshot as never;
+          console.log('this.state.postComments', this.state.postComments);
         });
       });
     } catch (error) {
@@ -555,9 +852,7 @@ export default class PostStore {
 
   onCreateCommentToPost = async () => {
     try {
-      const user = await UsersApi.getUser(
-        this.state.previewPost.userId as never,
-      );
+      const user = await UsersApi.getUser(this.rootStore.local.userId as never);
       if (!user || !user._id) {
         throw new Error('User not found');
       }
@@ -569,18 +864,21 @@ export default class PostStore {
           postId: this.state.previewPost._id,
           answerId: this.state.previewPost._id,
           type: 'comment',
-          userId: this.state.previewPost.userId,
+          userId: user.uid,
           title: this.state.newAnswerState.title,
           user: user as never,
+          createdAt: Date.now(),
         };
         if (!this.state.postComments) {
           this.state.postComments = [];
         }
-        this.state.postComments.unshift({
-          ...this.state.replyComment,
-        });
-        this.state.previewPost.comentsCount =
-          this.state.previewPost.comentsCount += 1;
+        this.state.postComments = [
+          this.state.replyComment,
+          ...this.state.postComments,
+        ];
+        this.state.previewPost.commentsCount =
+          this.state.previewPost.commentsCount += 1;
+        this.state.previewPost.rate = this.state.previewPost.rate += 0.3;
         if (
           !this.state.previewPost.commentUserIds?.includes(
             this.rootStore.local.userId as never,
@@ -616,10 +914,10 @@ export default class PostStore {
       this.state.isReply = isReply;
       this.state.replyComment = {
         _id: nanoid(10),
-        userId: post.userId,
+        userId: this.rootStore.local.userId as never,
         postId: post._id,
         answerId: post._id,
-        createdAt: 0,
+        createdAt: Date.now(),
         type: 'comment',
         title: post.title,
         user: post.user,
@@ -633,10 +931,10 @@ export default class PostStore {
       this.state.isReply = isReply;
       this.state.replyComment = {
         _id: nanoid(10),
-        userId: answer.userId,
+        userId: this.rootStore.local.userId as never,
         postId: answer.postId,
         answerId: answer._id,
-        createdAt: 0,
+        createdAt: Date.now(),
         type: 'comment',
         title: answer.title,
         user: answer.user,
@@ -693,6 +991,7 @@ export default class PostStore {
                       this.rootStore.local.userId as never,
                     ],
                     votesCount: item.votesCount + 1,
+                    rate: this.state.previewPost.rate + 0.5,
                   }
                 : item;
             });
@@ -727,6 +1026,7 @@ export default class PostStore {
                     this.rootStore.local.userId as never,
                   ],
                   votesCount: item.votesCount + 1,
+                  rate: post.rate + 0.5,
                 }
               : item;
           });
@@ -742,5 +1042,55 @@ export default class PostStore {
     } catch (error) {
       console.log(['Error: onVoteToPollOptionAtHome'], error);
     }
+  };
+
+  //report
+  setReportMessage = <T extends keyof PostStoreState['reportMessage']>(
+    key: T,
+    value: PostStoreState['reportMessage'][T],
+  ) => {
+    this.state = {
+      ...this.state,
+      reportMessage: {
+        ...this.state.reportMessage,
+        [key]: value,
+      },
+    };
+  };
+
+  onReportToPost = async () => {
+    try {
+      runInAction(() => {
+        this.state.reportLoading = true;
+        this.state.reportMessage = {
+          ...this.state.reportMessage,
+          id: nanoid(10),
+          createdAt: Date.now(),
+          userId: this.rootStore.local.userId as never,
+        };
+      });
+      await PostsApi.addReport(this.state.reportMessage);
+      setTimeout(() => {
+        runInAction(() => {
+          this.state.reportLoading = false;
+          this.rootStore.visible.hide('reportModal');
+        });
+        this.clearReportMessage();
+      }, 200);
+    } catch (error) {
+      console.log('Error: onReportToPost', error);
+    } finally {
+      setTimeout(() => {
+        runInAction(() => {
+          this.state.reportLoading = false;
+        });
+      }, 200);
+    }
+  };
+
+  clearReportMessage = () => {
+    runInAction(() => {
+      this.state.reportMessage = ReportInitial;
+    });
   };
 }

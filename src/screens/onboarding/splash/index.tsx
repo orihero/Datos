@@ -1,21 +1,17 @@
-import {useNavigation} from '@react-navigation/native';
 import RN from 'components/RN';
 import React, {useEffect, useRef} from 'react';
 import {Animated, TextStyle, ViewStyle} from 'react-native';
-import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
+
 import {ONBOARDING_STACK} from 'shared/navigation/routes';
 import {COLORS} from '../../../shared/constants/colors';
 import {SIZES} from 'shared/utils/dimensions';
+import NavigationService from 'shared/navigation/NavigationService';
 
 const {width: wWidth, height: wHeight} = SIZES;
 
 const SplashScreen = () => {
   const animationValue = useRef(new Animated.Value(0)).current;
   ONBOARDING_STACK.SPLASH;
-  const navigation =
-    useNavigation<
-      OnbardingStackProps<ONBOARDING_STACK.ONBOARDING_STEPS>['navigation']
-    >();
   const animationInterpolationMapper = (
     val: Animated.Value,
   ): {text: TextStyle; view: ViewStyle} => {
@@ -110,13 +106,15 @@ const SplashScreen = () => {
         }).start(
           i === 4
             ? () => {
-                navigation.navigate(ONBOARDING_STACK.ONBOARDING_LANGUAGE);
+                NavigationService.navigate(
+                  ONBOARDING_STACK.ONBOARDING_LANGUAGE,
+                );
               }
             : undefined,
         );
       }, i * (duration * 2));
     }
-  }, [animationValue, navigation]);
+  }, [animationValue]);
 
   const {text, view} = animationInterpolationMapper(animationValue);
 

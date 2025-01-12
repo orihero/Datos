@@ -35,9 +35,7 @@ export const TextInput: FC<Props> = ({
         value={value}
         onChangeText={onChangeText}
         placeholderTextColor={
-          placeholderTextColor
-            ? placeholderTextColor
-            : addAlpha(COLORS.black, 0.6)
+          placeholderTextColor ? placeholderTextColor : COLORS.textGray
         }
         style={[styles.input, inputStyle]}
         autoCapitalize="none"

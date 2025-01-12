@@ -5,6 +5,7 @@ import React, {FC} from 'react';
 import AnswerIcon from 'shared/assets/icons/AnswerIcon';
 import DownVote from 'shared/assets/icons/DownVote';
 import ReplyIcon from 'shared/assets/icons/ReplyIcon';
+import VerticalMenuIcon from 'shared/assets/icons/VerticalMenu';
 import ViewIcon from 'shared/assets/icons/ViewIcon';
 import {COLORS} from 'shared/constants/colors';
 import {HIT_SLOP} from 'shared/styles/globalStyles';
@@ -19,6 +20,12 @@ interface Props {
   onEnterPostByAnswer?: () => void;
   onEnterPostByView?: () => void;
   onReplyPress?: () => void;
+  onReportPress?: () => void;
+  backColor?: string;
+  itemBackColor?: string;
+  itemBorderColor?: string;
+  itemBorderWidth?: number;
+  isEnter?: boolean;
 }
 
 const PostFooter: FC<Props> = ({
@@ -30,11 +37,33 @@ const PostFooter: FC<Props> = ({
   onEnterPostByAnswer,
   onEnterPostByView,
   onReplyPress,
+  onReportPress,
+  backColor,
+  itemBackColor,
+  itemBorderColor,
+  itemBorderWidth,
+  isEnter,
 }) => {
   return (
-    <RN.Pressable style={styles.container} onPress={onEnterPost}>
+    <RN.Pressable
+      style={[
+        styles.container,
+        {backgroundColor: backColor ? backColor : COLORS.dargGray},
+      ]}
+      onPress={onEnterPost}>
       <RN.View style={styles.left}>
-        <RN.View style={[styles.item, {gap: 15}]}>
+        <RN.View
+          style={[
+            styles.item,
+            {
+              gap: 15,
+              backgroundColor: itemBackColor ? itemBackColor : COLORS.lightGray,
+              borderColor: itemBorderColor
+                ? itemBorderColor
+                : COLORS.transparent,
+              borderWidth: itemBorderWidth ? itemBorderWidth : 0,
+            },
+          ]}>
           <RN.TouchableOpacity onPress={onUpVote} hitSlop={HIT_SLOP}>
             <DownVote
               size={20}
@@ -67,31 +96,80 @@ const PostFooter: FC<Props> = ({
           </RN.TouchableOpacity>
         </RN.View>
         <RN.TouchableOpacity
-          style={[styles.item]}
+          style={[
+            styles.item,
+            {
+              backgroundColor: itemBackColor ? itemBackColor : COLORS.lightGray,
+              borderColor: itemBorderColor
+                ? itemBorderColor
+                : COLORS.transparent,
+              borderWidth: itemBorderWidth ? itemBorderWidth : 0,
+            },
+          ]}
           onPress={onEnterPostByAnswer}>
           <Spacing height={2} />
           <AnswerIcon color={COLORS.white} size={20} />
           <RN.Text size="h6" font="Medium" color={COLORS.white}>
-            {post?.type === 'Question'
-              ? post?.answersCount
-              : post?.comentsCount}
+            {post?.commentsCount}
           </RN.Text>
         </RN.TouchableOpacity>
         <RN.TouchableOpacity
           hitSlop={HIT_SLOP}
-          style={[styles.item]}
+          style={[
+            styles.item,
+            {
+              backgroundColor: itemBackColor ? itemBackColor : COLORS.lightGray,
+              borderColor: itemBorderColor
+                ? itemBorderColor
+                : COLORS.transparent,
+              borderWidth: itemBorderWidth ? itemBorderWidth : 0,
+            },
+          ]}
           onPress={onEnterPostByView}>
           <ViewIcon color={COLORS.white} size={20} />
           <RN.Text size="h6" font="Medium" color={COLORS.white}>
             {post?.viewUserIds?.length}
           </RN.Text>
         </RN.TouchableOpacity>
+        {isEnter && (
+          <RN.TouchableOpacity
+            onPress={onReplyPress}
+            style={[
+              styles.item,
+              {
+                width: 40,
+                borderRadius: 40,
+                backgroundColor: itemBackColor
+                  ? itemBackColor
+                  : COLORS.lightGray,
+                borderColor: itemBorderColor
+                  ? itemBorderColor
+                  : COLORS.transparent,
+                borderWidth: itemBorderWidth ? itemBorderWidth : 0,
+                paddingHorizontal: 0,
+              },
+            ]}
+            hitSlop={HIT_SLOP}>
+            <ReplyIcon color={COLORS.white} size={24} />
+          </RN.TouchableOpacity>
+        )}
       </RN.View>
       <RN.TouchableOpacity
-        onPress={onReplyPress}
-        style={[styles.item, {width: 40, borderRadius: 50}]}
+        onPress={onReportPress}
+        style={[
+          styles.item,
+          {
+            width: 40,
+            borderRadius: 40,
+            backgroundColor: itemBackColor ? itemBackColor : COLORS.lightGray,
+            borderColor: itemBorderColor ? itemBorderColor : COLORS.transparent,
+            borderWidth: itemBorderWidth ? itemBorderWidth : 0,
+            paddingHorizontal: 0,
+            transform: [{rotate: `${-90}deg`}],
+          },
+        ]}
         hitSlop={HIT_SLOP}>
-        <ReplyIcon color={COLORS.white} size={24} />
+        <VerticalMenuIcon color={COLORS.white} size={24} />
       </RN.TouchableOpacity>
     </RN.Pressable>
   );
@@ -108,7 +186,6 @@ const styles = RN.StyleSheet.create({
     paddingHorizontal: normalizeWidth(15),
     height: normalizeHeight(70),
     borderRadius: 15,
-    backgroundColor: COLORS.dargGray,
   },
   downButton: {
     transform: [{rotate: '180deg'}],
@@ -122,7 +199,6 @@ const styles = RN.StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     color: COLORS.white,
-    backgroundColor: COLORS.lightGray,
     gap: 5,
     borderRadius: 30,
     paddingHorizontal: normalizeWidth(10),

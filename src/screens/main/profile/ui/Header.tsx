@@ -29,9 +29,7 @@ export default () => {
           </RN.TouchableOpacity>
           <RN.TouchableOpacity
             style={styles.iconButton}
-            onPress={() =>
-              NavigationService.navigate(HOME_STACK.PROFILE_SETTINGS)
-            }>
+            onPress={() => NavigationService.navigate(HOME_STACK.SETTINGS)}>
             <SettingsIcon size={24} color={COLORS.white} />
           </RN.TouchableOpacity>
         </RN.View>

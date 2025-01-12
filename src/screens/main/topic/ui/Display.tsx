@@ -7,7 +7,7 @@ import {COLORS} from 'shared/constants/colors';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
 import {HIT_SLOP} from 'shared/styles/globalStyles';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
-import TopicItem from './TopicItem';
+import TopicItem from '../../../../components/TopicItem/TopicItem';
 import {Spacing} from 'components/Spacing';
 
 export default observer(() => {
@@ -75,6 +75,7 @@ export default observer(() => {
                 onPress={() => handleTopicSelect(topic as never)}
                 onFollow={() => onFollowToTopic(topic)}
                 isFollowed={topic.followerIds?.includes(userId as never)}
+                loading={topicState.joinTopicLoading[topic?._id as never]}
               />
               <Spacing height={5} />
             </RN.View>
@@ -100,7 +101,7 @@ const styles = RN.StyleSheet.create({
     color: COLORS.white,
     borderWidth: 1,
     borderColor: COLORS.lightGray,
-    borderRadius: 30,
+    borderRadius: 15,
   },
   topics: {
     flexDirection: 'row',

@@ -51,16 +51,16 @@ export function timeSince(createdAt: number) {
   const now = Date.now(); // Hozirgi vaqtni oling
   const diff = now - createdAt; // Millisekundlarda farq
 
-  if (diff === 0 || now === createdAt) {
-    return '1 s ago'; // Hozir va yaratilgan vaqt teng bo'lsa
-  }
-
   const seconds = diff / 1000; // Soniyalar
   const minutes = seconds / 60; // Daqiqalar
   const hours = minutes / 60; // Soatlar
   const days = hours / 24; // Kunlar
   const weeks = days / 7; // Haftalar
   const years = days / 365; // Yillar
+
+  if (seconds < 1) {
+    return '1 s ago'; // Hozir va yaratilgan vaqt teng bo'lsa
+  }
 
   if (seconds < 60) {
     return `${Math.floor(seconds)} s ago`; // 1 daqiqadan kam bo'lsa

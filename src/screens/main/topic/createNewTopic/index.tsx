@@ -3,17 +3,12 @@ import RN from 'components/RN';
 import React from 'react';
 import Header from '../../topic/ui/Header';
 import CreateTopicDisplay from '../createNewTopic/ui/Display';
-import {Keyboard} from 'react-native';
+import {useTranslation} from 'react-i18next';
 
 const CreateTopic = () => {
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
-  };
-
+  const {t} = useTranslation();
   return (
-    <Container
-      Header={<Header title="New Topic" isTopics={false} />}
-      onPress={dismissKeyboard}>
+    <Container Header={<Header title={`${t('new_topic')}`} isTopics={false} />}>
       <RN.View ph={12} flex={1} g={10}>
         <CreateTopicDisplay />
       </RN.View>

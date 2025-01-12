@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   View,
   TextInput,
@@ -16,11 +16,17 @@ import {COLORS} from 'shared/constants/colors';
 import {Spacing} from 'components/Spacing';
 import {observer} from 'mobx-react-lite';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
+import RN from 'components/RN';
+import VideoContent from 'components/VideoContent/VideoContent';
+import CrossRedCircleSmallIcon from 'shared/assets/icons/CrossRedCircleSmallIcon';
+import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
+import {useTranslation} from 'react-i18next';
 
 export default observer(() => {
-  const {state, onChangeOfNewPostState} = useRootStore().post;
+  const {t} = useTranslation();
+  const {state, onChangeOfNewPostState, onRemoveNewPostMediaUrl} =
+    useRootStore().post;
   const [showDaysSelector, setShowDaysSelector] = useState(false);
-
   const titleInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
@@ -38,6 +44,7 @@ export default observer(() => {
           id: String(state.newPostState.pollOptions.length + 1),
           text: '',
           votesCount: 0,
+          votedUserIds: [],
         },
       ]);
     }
@@ -76,21 +83,46 @@ export default observer(() => {
     onChangeOfNewPostState('pollOptions', newOptions);
   };
 
+  const renderMedia = useCallback(() => {
+    return state.newPostMediaUrl.uri ? (
+      <RN.View style={styles.media}>
+        {state.newPostMediaUrl.type === 'image' ? (
+          <RN.Image
+            style={styles.image}
+            source={{uri: state.newPostMediaUrl.uri}}
+          />
+        ) : (
+          <VideoContent uri={state.newPostMediaUrl?.uri} height={200} />
+        )}
+        <RN.TouchableOpacity
+          style={styles.removeMedia}
+          onPress={onRemoveNewPostMediaUrl}>
+          <CrossRedCircleSmallIcon color={COLORS.lightGray} size={32} />
+        </RN.TouchableOpacity>
+      </RN.View>
+    ) : null;
+  }, [
+    onRemoveNewPostMediaUrl,
+    state.newPostMediaUrl.type,
+    state.newPostMediaUrl.uri,
+  ]);
+
   return (
     <GestureHandlerRootView style={styles.container}>
       <TextInput
         ref={titleInputRef}
         value={state.newPostState.title}
         onChangeText={e => onChangeOfNewPostState('title', e)}
-        placeholder="Title"
+        placeholder={`${t('title')}`}
         placeholderTextColor={COLORS.textGray}
         style={styles.title}
         multiline
       />
+      {renderMedia()}
       <TextInput
         value={state.newPostState.body}
         onChangeText={e => onChangeOfNewPostState('body', e)}
-        placeholder="Body (Optional)"
+        placeholder={`${t('body')} ${t('optional')}`}
         placeholderTextColor={COLORS.textGray}
         style={styles.body}
         multiline
@@ -102,11 +134,13 @@ export default observer(() => {
             style={styles.daysButton}
             onPress={() => setShowDaysSelector(true)}>
             <Text style={[styles.pollEndsText, {color: COLORS.textGray}]}>
-              Poll ends in
+              {t('poll_ends')}
             </Text>
             <Text style={styles.pollEndsText}>
               {state.newPostState.pollEndDays}{' '}
-              {state.newPostState.pollEndDays === 1 ? 'day' : 'days'}
+              {state.newPostState.pollEndDays === 1
+                ? `${t('day')}`
+                : `${t('days')}`}
             </Text>
             <ArrowDownIcon size={20} color={COLORS.white} />
           </TouchableOpacity>
@@ -128,7 +162,7 @@ export default observer(() => {
           {state.newPostState.pollOptions.length < 4 && (
             <Pressable style={styles.addOption} onPress={addOption}>
               <PlusIcon size={24} color={COLORS.textGray} />
-              <Text style={styles.addOptionText}>Add option</Text>
+              <Text style={styles.addOptionText}>{t('add_optin')}</Text>
             </Pressable>
           )}
         </View>
@@ -192,5 +226,23 @@ const styles = StyleSheet.create({
     color: COLORS.textGray,
     marginLeft: 10,
     fontSize: 16,
+  },
+  media: {
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: normalizeHeight(400),
+  },
+  removeMedia: {
+    backgroundColor: COLORS.white,
+    borderRadius: 50,
+    aspectRatio: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: normalizeHeight(5),
+    right: normalizeWidth(10),
   },
 });

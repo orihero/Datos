@@ -1,4 +1,5 @@
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {TextInput, StyleSheet, TouchableOpacity} from 'react-native';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
@@ -30,6 +31,7 @@ export const PollOption = ({
   canRemove,
   onDragEnd,
 }: PollOptionProps) => {
+  const {t} = useTranslation();
   const translateY = useSharedValue(0);
 
   const panGesture = useAnimatedGestureHandler({
@@ -67,7 +69,7 @@ export const PollOption = ({
       <TextInput
         value={text}
         onChangeText={onChangeText}
-        placeholder={`Option ${id}`}
+        placeholder={`${t('option')} ${id}`}
         placeholderTextColor={COLORS.textGray}
         style={styles.input}
       />

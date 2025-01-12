@@ -1,13 +1,11 @@
 import React from 'react';
 import RN from 'components/RN';
 import GalleryIcon from 'shared/assets/icons/Gallery';
-import LinkIcon from 'shared/assets/icons/LinkIcon';
 import {COLORS} from 'shared/constants/colors';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 import {observer} from 'mobx-react-lite';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
-import VideoIcon from 'shared/assets/icons/VideoIcon';
 
 export default observer(() => {
   const {onSelectNewPostMediaUrl} = useRootStore().post;
@@ -15,7 +13,7 @@ export default observer(() => {
   const handlePickImage = async () => {
     launchImageLibrary(
       {
-        mediaType: 'photo',
+        mediaType: 'mixed',
         selectionLimit: 1,
         includeExtra: true,
       },
@@ -34,9 +32,6 @@ export default observer(() => {
     <RN.View style={styles.container}>
       <RN.TouchableOpacity onPress={handlePickImage}>
         <GalleryIcon color={COLORS.textGray} />
-      </RN.TouchableOpacity>
-      <RN.TouchableOpacity>
-        <VideoIcon color={COLORS.textGray} size={18} />
       </RN.TouchableOpacity>
     </RN.View>
   );

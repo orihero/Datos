@@ -24,7 +24,7 @@ export const CheckboxButton: FC<CheckboxButtonProps> = ({
         justifyContent: 'center',
       }}>
       {value ? (
-        <CheckboxIcon color={checkboxColor || COLORS.black} size={24} />
+        <CheckboxIcon color={checkboxColor || COLORS.white} size={24} />
       ) : (
         <RN.View style={styles.checkbox} />
       )}
@@ -37,6 +37,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 24,
-    backgroundColor: addAlpha(COLORS.black, 0.1),
+    backgroundColor: addAlpha(COLORS.white, 0.2),
   },
 });

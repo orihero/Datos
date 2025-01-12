@@ -2,11 +2,13 @@ import RN from 'components/RN';
 import {Spacing} from 'components/Spacing';
 import {observer} from 'mobx-react-lite';
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 import {COLORS} from 'shared/constants/colors';
 import {useRootStore} from 'shared/store/hooks/useRootStore';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 
 export default observer(() => {
+  const {t} = useTranslation();
   const {onChangeOfNewPostState, state} = useRootStore().post;
   const onChangeQuestion = () => {
     onChangeOfNewPostState('type', 'Question');
@@ -29,7 +31,7 @@ export default observer(() => {
             styles.button,
             state.newPostState.type === 'Question' && styles.activeButton,
           ]}>
-          <RN.Text style={styles.buttonText}>Question</RN.Text>
+          <RN.Text style={styles.buttonText}>{t('question')}</RN.Text>
         </RN.TouchableOpacity>
         <RN.TouchableOpacity
           onPress={onChangePost}
@@ -37,7 +39,7 @@ export default observer(() => {
             styles.button,
             state.newPostState.type === 'Post' && styles.activeButton,
           ]}>
-          <RN.Text style={styles.buttonText}>Post</RN.Text>
+          <RN.Text style={styles.buttonText}>{t('post')}</RN.Text>
         </RN.TouchableOpacity>
         <RN.TouchableOpacity
           onPress={onChangePoll}
@@ -45,7 +47,7 @@ export default observer(() => {
             styles.button,
             state.newPostState.type === 'Poll' && styles.activeButton,
           ]}>
-          <RN.Text style={styles.buttonText}>Poll</RN.Text>
+          <RN.Text style={styles.buttonText}>{t('poll')}</RN.Text>
         </RN.TouchableOpacity>
       </RN.View>
       <Spacing height={20} />

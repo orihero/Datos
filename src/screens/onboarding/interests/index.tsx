@@ -10,9 +10,12 @@ import {COLORS} from 'shared/constants/colors';
 import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
 import {ONBOARDING_STACK, ROOT_STACK} from 'shared/navigation/routes';
 import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
-import {HIT_SLOP} from 'shared/styles/globalStyles';
-
-const storage = new MMKV();
+import {useTranslation} from 'react-i18next';
+import TripleHeader from 'components/TripleHeader/TripleHeader';
+import Container from 'components/Container';
+import {Spacing} from 'components/Spacing';
+import NavigationService from 'shared/navigation/NavigationService';
+import {useRootStore} from 'shared/store/hooks/useRootStore';
 
 interface Interest {
   name: string;
@@ -20,6 +23,8 @@ interface Interest {
 }
 
 const InterestsScreen = () => {
+  const {t} = useTranslation();
+  const {register} = useRootStore();
   const [selectedInterest, setSelectedInterest] = useState<string[]>([]);
   // const navigation = useNavigation();
   const navigation =
@@ -42,10 +47,6 @@ const InterestsScreen = () => {
 
   useEffect(() => {
     fetchInterests();
-    const savedInterests = storage.getString('selectedInterest');
-    if (savedInterests) {
-      setSelectedInterest(JSON.parse(savedInterests));
-    }
   }, [fetchInterests]);
 
   const toggleInterest = (interest: string) => {
@@ -57,7 +58,7 @@ const InterestsScreen = () => {
   };
 
   const saveInterests = () => {
-    storage.set('selectedInterest', JSON.stringify(selectedInterest));
+    register.onChangeOfSetup('interests', selectedInterest);
     navigation.navigate(ROOT_STACK.AUTH);
   };
 
@@ -89,20 +90,14 @@ const InterestsScreen = () => {
   };
 
   const renderHeader = () => (
-    <RN.View style={styles.header}>
-      <RN.TouchableOpacity
-        hitSlop={HIT_SLOP}
-        onPress={() => navigation.goBack()}
-        style={styles.headerLeft}>
-        <ArrowLeftIcon size={24} color={COLORS.black} />
-      </RN.TouchableOpacity>
-      <RN.View style={styles.headerInfo}>
-        <RN.Text style={styles.headerTitle}>Interests</RN.Text>
-        <RN.Text style={styles.headerSubtitle}>
-          Pick things you’d like to see in your home feed.
-        </RN.Text>
-      </RN.View>
-    </RN.View>
+    <TripleHeader
+      title={t('interests')}
+      leftItem={
+        <RN.TouchableOpacity onPress={() => NavigationService.goBack()}>
+          <ArrowLeftIcon color={COLORS.white} size={22} />
+        </RN.TouchableOpacity>
+      }
+    />
   );
 
   if (loading) {
@@ -115,8 +110,10 @@ const InterestsScreen = () => {
   }
 
   return (
-    <RN.View style={styles.container}>
-      {renderHeader()}
+    <Container Header={renderHeader()}>
+      <Spacing height={20} />
+      <RN.Text style={styles.headerSubtitle}>{t('choose_interests')}</RN.Text>
+      <Spacing height={20} />
       <RN.FlatList
         data={interests}
         keyExtractor={item => item.name.toString()}
@@ -136,11 +133,13 @@ const InterestsScreen = () => {
           disabled={selectedInterest.length === 0}
           onPress={saveInterests}>
           <RN.Text style={styles.footerText}>
-            {selectedInterest.length > 0 ? 'Continue' : '0 of 1 selected'}
+            {selectedInterest.length > 0
+              ? `${t('continue')}`
+              : `${selectedInterest.length} ${t('selected')}`}
           </RN.Text>
         </RN.TouchableOpacity>
       </RN.View>
-    </RN.View>
+    </Container>
   );
 };
 
@@ -176,8 +175,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: COLORS.darkGray2,
+    textAlign: 'center',
   },
   categoryContainer: {
     marginBottom: 24,
@@ -195,12 +195,12 @@ const styles = StyleSheet.create({
   interestButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: COLORS.lightGray,
     borderRadius: 20,
     marginRight: 8,
     marginBottom: 8,
     borderWidth: 1.5,
-    borderColor: '#f0f0f0',
+    borderColor: COLORS.lightGray,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -211,10 +211,10 @@ const styles = StyleSheet.create({
   },
   interestText: {
     fontSize: 14,
-    color: COLORS.black,
+    color: COLORS.white,
   },
   selectedText: {
-    color: COLORS.black,
+    color: COLORS.blue,
   },
   footer: {
     backgroundColor: COLORS.blue,
@@ -227,7 +227,6 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   footerBox: {
-    backgroundColor: COLORS.white,
     width: '100%',
     marginBottom: 30,
     paddingTop: 20,
@@ -246,6 +245,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.black,
   },
 });
 

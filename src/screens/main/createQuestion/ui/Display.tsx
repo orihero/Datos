@@ -6,8 +6,11 @@ import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 import {observer} from 'mobx-react-lite';
 import CrossRedCircleSmallIcon from 'shared/assets/icons/CrossRedCircleSmallIcon';
 import {TextInput} from 'react-native';
+import VideoContent from 'components/VideoContent/VideoContent';
+import {useTranslation} from 'react-i18next';
 
 export default observer(() => {
+  const {t} = useTranslation();
   const {onChangeOfNewPostState, state, onRemoveNewPostMediaUrl} =
     useRootStore().post;
 
@@ -21,11 +24,15 @@ export default observer(() => {
 
   const renderMedia = useCallback(() => {
     return state.newPostMediaUrl.uri ? (
-      <RN.View>
-        <RN.Image
-          style={styles.image}
-          source={{uri: state.newPostMediaUrl.uri}}
-        />
+      <RN.View style={styles.media}>
+        {state.newPostMediaUrl.type === 'image' ? (
+          <RN.Image
+            style={styles.image}
+            source={{uri: state.newPostMediaUrl.uri}}
+          />
+        ) : (
+          <VideoContent uri={state.newPostMediaUrl?.uri} height={200} />
+        )}
         <RN.TouchableOpacity
           style={styles.removeMedia}
           onPress={onRemoveNewPostMediaUrl}>
@@ -33,7 +40,11 @@ export default observer(() => {
         </RN.TouchableOpacity>
       </RN.View>
     ) : null;
-  }, [onRemoveNewPostMediaUrl, state.newPostMediaUrl.uri]);
+  }, [
+    onRemoveNewPostMediaUrl,
+    state.newPostMediaUrl.type,
+    state.newPostMediaUrl.uri,
+  ]);
 
   return (
     <RN.Pressable style={styles.container}>
@@ -41,7 +52,7 @@ export default observer(() => {
         ref={titleInputRef}
         onChangeText={e => onChangeOfNewPostState('title', e)}
         value={state.newPostState.title}
-        placeholder="Title"
+        placeholder={t('title') as never}
         placeholderTextColor={COLORS.textGray}
         style={styles.title}
         multiline
@@ -50,7 +61,7 @@ export default observer(() => {
       <RN.TextInput
         onChangeText={e => onChangeOfNewPostState('body', e)}
         value={state.newPostState.body}
-        placeholder="Body (Optional)"
+        placeholder={`${t('body')} ${t('optional')}`}
         placeholderTextColor={COLORS.textGray}
         style={styles.body}
         multiline
@@ -70,6 +81,10 @@ const styles = RN.StyleSheet.create({
   body: {
     fontSize: normalizeHeight(16),
     color: COLORS.white,
+  },
+  media: {
+    borderRadius: 15,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',

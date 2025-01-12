@@ -13,6 +13,7 @@ import {ONBOARDING_STACK} from 'shared/navigation/routes';
 import {useNavigation} from '@react-navigation/native';
 import {OnbardingStackProps} from 'shared/navigation/navigators/OnboardingStack';
 import {COLORS} from 'shared/constants/colors';
+import {useTranslation} from 'react-i18next';
 
 interface Slide {
   key: number;
@@ -24,43 +25,44 @@ interface Slide {
 const slides: Slide[] = [
   {
     key: 1,
-    title: 'Discover the world of questions',
-    text: 'Welcome to Datos.uz, where curiosity knows no bounds! Start your journey by exploring a diverse world of questions.',
+    title: 'stepOneTitle',
+    text: 'stepOneDescription',
     animation: require('../../../../shared/assets/lottie/onboarding-1.json'),
   },
   {
     key: 2,
-    title: 'Learn and grow',
-    text: 'Engage in enlightening discussions, unlock new possibilities, and grow your knowledge.',
+    title: 'stepTwoTitle',
+    text: 'stepTwoDescription',
     animation: require('../../../../shared/assets/lottie/onboarding-2.json'),
   },
   {
     key: 3,
-    title: 'Achieve success',
-    text: 'With the right questions and answers, you can achieve anything you desire.',
+    title: 'stepThreeTitle',
+    text: 'stepThreeDescription',
     animation: require('../../../../shared/assets/lottie/onboarding-3.json'),
   },
 ];
 
 const OnboardingScreen: React.FC = () => {
+  const {t} = useTranslation();
   const navigation =
     useNavigation<OnbardingStackProps<ONBOARDING_STACK.LOTTIE>['navigation']>();
   const renderItem = ({item}: {item: Slide}) => (
     <View style={styles.slide}>
       <LottieView source={item.animation} autoPlay loop style={styles.lottie} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.text}>{item.text}</Text>
+      <Text style={styles.title}>{t(item.title)}</Text>
+      <Text style={styles.text}>{t(item.text)}</Text>
     </View>
   );
 
   const renderNextButton = () => (
     <View style={styles.nextButton}>
-      <Text style={styles.nextButtonText}>NEXT</Text>
+      <Text style={styles.nextButtonText}>{t('next')}</Text>
     </View>
   );
   const renderDoneButton = () => (
     <View style={styles.finishButton}>
-      <Text style={styles.nextButtonText}>Finish</Text>
+      <Text style={styles.nextButtonText}>{t('continue')}</Text>
     </View>
   );
   const onInterestsPress = () => {

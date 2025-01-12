@@ -18,6 +18,21 @@ export default class StorageApi {
       return null;
     }
   };
+
+  static uploadImageTwo = async ({file}) => {
+    if (!file) {
+      throw new Error('No file to upload');
+    }
+
+    const filePath = file.uri || file.path; // Fayl yo'lini olish
+    const fileName = filePath.substring(filePath.lastIndexOf('/') + 1); // Fayl nomini ajratib olish
+    const reference = storage().ref(`/images/${fileName}`); // Firebase Storage yo'li
+
+    const uploadTask = await reference.putFile(filePath); // Faylni yuklash
+
+    const downloadUrl = await reference.getDownloadURL(); // Yuklangan fayl uchun URL
+    return downloadUrl;
+  };
 }
 
 export const getUrlFromStorage = async (

@@ -2,16 +2,16 @@ import React from 'react';
 import Svg, {Path} from 'react-native-svg';
 import {COLORS} from 'shared/constants/colors';
 
-const PollIcon = ({size = 24, color = COLORS.white}) => {
+const PollIcon = ({size = 32, color = COLORS.dargGray}) => {
   return (
     <Svg
       width={size}
       height={size}
       viewBox="0 0 1024 1024"
-      fill="none"
+      fill="white"
       xmlns="http://www.w3.org/2000/svg">
       <Path
-        d="M256 469.333333h682.666667v85.333334H256z m0-170.666666h510.72v85.333333H256z m0 341.333333h384v85.333333H256zM85.333333 170.666667h85.333334v682.666666H85.333333z"
+        d="M960 864V160c0-53-43-96-96-96H160C107 64 64 107 64 160v704c0 53 43 96 96 96h704c53 0 96-43 96-96zM288 384c-17.68 0-32-14.32-32-32v-64c0-17.68 14.32-32 32-32h256c17.68 0 32 14.32 32 32v64c0 17.68-14.32 32-32 32H288z m0 192c-17.68 0-32-14.32-32-32v-64c0-17.68 14.32-32 32-32h448c17.68 0 32 14.32 32 32v64c0 17.68-14.32 32-32 32H288z m0 192c-17.68 0-32-14.32-32-32v-64c0-17.68 14.32-32 32-32h128c17.68 0 32 14.32 32 32v64c0 17.68-14.32 32-32 32h-128z"
         fill={color}
       />
     </Svg>

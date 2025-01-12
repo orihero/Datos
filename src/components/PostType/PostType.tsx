@@ -29,9 +29,9 @@ export default observer(PostType);
 
 const styles = RN.StyleSheet.create({
   container: {
-    paddingHorizontal: normalizeWidth(10),
-    paddingVertical: normalizeHeight(10),
-    backgroundColor: COLORS.blue,
-    borderRadius: 15,
+    paddingHorizontal: normalizeWidth(5),
+    paddingVertical: normalizeHeight(5),
+    // backgroundColor: COLORS.dargGray,
+    borderRadius: 10,
   },
 });

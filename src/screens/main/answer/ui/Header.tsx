@@ -3,7 +3,6 @@ import RN from 'components/RN';
 import {observer} from 'mobx-react-lite';
 import React, {useMemo} from 'react';
 import ArrowLeftIcon from 'shared/assets/icons/ArrowLeftIcon';
-import UserIcon from 'shared/assets/icons/UserIcon';
 import {COLORS} from 'shared/constants/colors';
 import {useAppViewInsets} from 'shared/hooks/useAppViewInsets';
 import NavigationService from 'shared/navigation/NavigationService';
@@ -13,9 +12,8 @@ import {normalizeHeight, normalizeWidth} from 'shared/utils/dimensions';
 const HeaderView = () => {
   const {paddingTop} = useAppViewInsets();
   const {state} = useRootStore().post;
-  const {userId} = useRootStore().local;
-  const {onFollowToTopic} = useRootStore().topic;
-  const height = useMemo(() => normalizeHeight(25) + paddingTop, [paddingTop]);
+  const {show} = useRootStore().visible;
+  const height = useMemo(() => normalizeHeight(30) + paddingTop, [paddingTop]);
 
   const goBackHandle = () => {
     NavigationService.goBack();
@@ -26,27 +24,24 @@ const HeaderView = () => {
       <RN.TouchableOpacity style={styles.iconButton} onPress={goBackHandle}>
         <ArrowLeftIcon size={24} color={COLORS.white} />
       </RN.TouchableOpacity>
-      <RN.View style={styles.topicInfo}>
+      <RN.Pressable
+        style={styles.topicInfo}
+        onPress={() => show('previewTopic')}>
         <RN.Text color={COLORS.white} size="h1">
           {state.previewPost?.topic?.title}
         </RN.Text>
         <RN.Text color={COLORS.textGray} size="h6">
           {state.previewPost?.topic?.followerIds?.length} Followers
         </RN.Text>
-      </RN.View>
-      <RN.Pressable style={styles.topicAvatarBox}>
-        {state.previewPost?.topic?.avatar ? (
-          <Avatar
-            isShowFollowBtn={
-              !state.previewPost?.topic?.followerIds?.includes(userId as never)
-            }
-            size={50}
-            uri={state.previewPost?.topic?.avatar}
-            onPressFollowBtn={() => onFollowToTopic(state.previewPost.topic)}
-          />
-        ) : (
-          <UserIcon size={32} color={COLORS.white} />
-        )}
+      </RN.Pressable>
+      <RN.Pressable
+        style={styles.topicAvatarBox}
+        onPress={() => show('previewTopic')}>
+        <Avatar
+          isUser={false}
+          size={55}
+          uri={state.previewPost?.topic?.avatar}
+        />
       </RN.Pressable>
     </RN.View>
   );
@@ -59,7 +54,7 @@ const styles = RN.StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: normalizeWidth(30),
     backgroundColor: COLORS.dargGray,
-    // paddingBottom: 15,
+    paddingBottom: 15,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     alignItems: 'flex-end',
@@ -74,10 +69,10 @@ const styles = RN.StyleSheet.create({
     position: 'absolute',
     left: normalizeWidth(15),
     borderRadius: 40,
-    bottom: normalizeHeight(12),
+    bottom: normalizeHeight(20),
   },
   topicInfo: {
-    paddingBottom: normalizeHeight(10),
+    paddingBottom: normalizeHeight(5),
     alignItems: 'center',
   },
   topicAvatarBox: {
@@ -85,7 +80,7 @@ const styles = RN.StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     right: normalizeWidth(15),
-    bottom: normalizeHeight(10),
+    bottom: normalizeHeight(20),
   },
   topicAvatar: {
     width: normalizeWidth(50),

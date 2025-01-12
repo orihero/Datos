@@ -71,7 +71,7 @@ const styles = RN.StyleSheet.create({
   container: {
     backgroundColor: COLORS.dargGray,
     paddingHorizontal: normalizeWidth(15),
-    paddingBottom: normalizeHeight(15),
+    paddingBottom: normalizeHeight(20),
   },
   inputBox: {
     paddingTop: normalizeHeight(10),

@@ -1,14 +1,15 @@
-import {makeAutoObservable} from 'mobx';
+import {makeAutoObservable, runInAction} from 'mobx';
 import {ICountry} from 'react-native-international-phone-number';
 import RootStore from './RootStore';
 import RegisterApi from 'shared/api/register.api';
 import {FirebaseAuthTypes} from '@react-native-firebase/auth';
 import Loading from 'shared/utils/Loading';
 import NavigationService from 'shared/navigation/NavigationService';
-import {REGISTER_STACK, ROOT_STACK} from 'shared/navigation/routes';
+import {HOME_STACK, REGISTER_STACK, ROOT_STACK} from 'shared/navigation/routes';
 import UsersApi from 'shared/api/users.api';
 import {Alert} from 'react-native';
 import {nanoid} from 'nanoid/non-secure';
+import {User, UserInitial} from '@types';
 
 export interface RegisterStoreState {
   login: {
@@ -18,13 +19,7 @@ export interface RegisterStoreState {
   confirmCode: {
     code: string;
   };
-  setup: {
-    firstName: string;
-    lastName: string;
-    nickname: string;
-    userImageUrl: string | null;
-    gender: 'male' | 'female';
-  };
+  setup: User;
 }
 
 const initialState: RegisterStoreState = {
@@ -35,13 +30,7 @@ const initialState: RegisterStoreState = {
   confirmCode: {
     code: '',
   },
-  setup: {
-    firstName: '',
-    lastName: '',
-    nickname: '',
-    userImageUrl: null,
-    gender: 'male',
-  },
+  setup: UserInitial,
 };
 
 export default class RegisterStore {
@@ -173,18 +162,22 @@ export default class RegisterStore {
     }
   };
 
-  onSetUpFinish = async (_id: string) => {
+  onSetUpFinish = async () => {
     const newUser = {
       ...this.state.setup,
-      _id,
     };
     try {
       this.loadingWhenOnFinish.show();
-      await UsersApi.addUser(newUser as never);
-      this.rootStore.local.setUserId(_id);
+      const isHasUser = await UsersApi.getUser(newUser.uid);
+      if (isHasUser === null) {
+        await UsersApi.addUser(newUser as never);
+      } else {
+        await UsersApi.updateUser(isHasUser.docId, newUser as never);
+      }
       setTimeout(() => {
         NavigationService.navigate(ROOT_STACK.HOME);
         this.loadingWhenOnFinish.hide();
+        this.rootStore.local.setUserId(newUser.uid);
       }, 400);
     } catch (err) {
       console.log(['[Error-onSetUpFinish]:', err]);
@@ -197,26 +190,34 @@ export default class RegisterStore {
     try {
       this.loadingWhenGoogleLogIn.show();
       const res = await RegisterApi.signInWithGoogle();
+      const rate = await UsersApi.getRate(1);
       const newUser = {
+        ...UserInitial,
         _id: nanoid(10),
         uid: res.user.uid,
         createdAt: Date.now(),
         email: res.user.email,
         firstName: res.additionalUserInfo?.profile?.given_name,
         lastName: res.additionalUserInfo?.profile?.family_name,
-        nickname: res.additionalUserInfo?.profile?.name.split(' ').join(''),
         userImageUrl: res.additionalUserInfo?.profile?.picture,
-        interest: this.rootStore.local.selectedInterest,
+        level: {...rate, createdAt: Date.now()},
       };
-      const isHasUser = await UsersApi.getUser(newUser._id);
-      if (isHasUser === null) {
-        await UsersApi.addUser(newUser as never);
+      runInAction(() => {
+        this.state.setup = newUser as never;
+      });
+      const isHasUser = await UsersApi.getUser(newUser.uid);
+      if (isHasUser) {
+        setTimeout(() => {
+          NavigationService.navigate(ROOT_STACK.HOME);
+          this.loadingWhenGoogleLogIn.hide();
+          this.rootStore.local.setUserId(newUser.uid);
+        }, 400);
+      } else {
+        setTimeout(() => {
+          NavigationService.navigate(REGISTER_STACK.SET_UP);
+          this.loadingWhenGoogleLogIn.hide();
+        }, 400);
       }
-      this.rootStore.local.setUserId(newUser._id);
-      setTimeout(() => {
-        NavigationService.navigate(ROOT_STACK.HOME);
-        this.loadingWhenGoogleLogIn.hide();
-      }, 400);
     } catch (err) {
       console.log(['[Error-onSignInWithGoogle]:', err]);
     } finally {
@@ -226,12 +227,8 @@ export default class RegisterStore {
 
   onSignOut = async () => {
     try {
-      await RegisterApi.signOut();
+      // await RegisterApi.signOut();
       this.rootStore.local.clearUserId();
-      setTimeout(() => {
-        NavigationService.navigate(ROOT_STACK.ONBOARDING);
-        this.loadingWhenGoogleLogIn.hide();
-      }, 400);
     } catch (err) {
       console.log(['[Error-onSignOut]:', err]);
     }

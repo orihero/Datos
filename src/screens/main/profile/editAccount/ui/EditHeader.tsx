@@ -6,24 +6,24 @@ import LogoutIcon from 'shared/assets/icons/LogoutIcon';
 import {COLORS} from 'shared/constants/colors';
 import {normalizeWidth} from 'shared/utils/dimensions';
 import {useNavigation} from '@react-navigation/native';
-import {useRegister} from 'shared/store/hooks/useRegister';
+import {useRootStore} from 'shared/store/hooks/useRootStore';
 
 export default () => {
   const {goBack} = useNavigation();
-  const {onSignOut} = useRegister();
+  const {visible} = useRootStore();
 
   return (
     <Header
       containerStyle={styles.header}
       LeftHeader={
-        <RN.View pt={10}>
-          <RN.TouchableOpacity style={styles.iconButton} onPress={goBack}>
-            <ArrowLeftIcon size={24} color={COLORS.white} />
-          </RN.TouchableOpacity>
-        </RN.View>
+        <RN.TouchableOpacity style={styles.iconButton} onPress={goBack}>
+          <ArrowLeftIcon size={24} color={COLORS.white} />
+        </RN.TouchableOpacity>
       }
       RightHeader={
-        <RN.TouchableOpacity style={styles.iconButton} onPress={onSignOut}>
+        <RN.TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => visible.show('logoutConfirmation')}>
           <LogoutIcon size={24} color={COLORS.white} />
         </RN.TouchableOpacity>
       }
