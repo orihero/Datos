@@ -46,3 +46,33 @@ export function convertToStandardFormat(date: string | number | Date): string {
 export function convertToShortDate(date: string | number | Date): string {
   return format(date, MM_DD_YYYY);
 }
+
+export function timeSince(createdAt: number) {
+  const now = Date.now(); // Hozirgi vaqtni oling
+  const diff = now - createdAt; // Millisekundlarda farq
+
+  const seconds = diff / 1000; // Soniyalar
+  const minutes = seconds / 60; // Daqiqalar
+  const hours = minutes / 60; // Soatlar
+  const days = hours / 24; // Kunlar
+  const weeks = days / 7; // Haftalar
+  const years = days / 365; // Yillar
+
+  if (seconds < 1) {
+    return '1 s ago'; // Hozir va yaratilgan vaqt teng bo'lsa
+  }
+
+  if (seconds < 60) {
+    return `${Math.floor(seconds)} s ago`; // 1 daqiqadan kam bo'lsa
+  } else if (minutes < 60) {
+    return `${Math.floor(minutes)} min ago`; // 1 soatdan kam bo'lsa
+  } else if (hours < 24) {
+    return `${Math.floor(hours)} h ago`; // 24 soatdan kam bo'lsa
+  } else if (days <= 7) {
+    return `${Math.floor(days)} d ago`; // 1 haftadan kam bo'lsa
+  } else if (weeks < 52) {
+    return `${Math.floor(weeks)} w ago`; // 1 yildan kam bo'lsa
+  } else {
+    return `${Math.floor(years)} y ago`; // 1 yildan katta bo'lsa
+  }
+}

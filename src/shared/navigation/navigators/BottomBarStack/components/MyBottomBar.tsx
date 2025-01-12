@@ -6,14 +6,17 @@ import React, {FC} from 'react';
 import {addAlpha} from 'shared/utils/color';
 import {SIZES} from 'shared/utils/dimensions';
 import {BottomBarIcons, bottomBarOptions} from '../BottomBarStack.constants';
-import {BlurView} from '@react-native-community/blur';
+// import {BlurView} from '@react-native-community/blur';
 import {map} from 'lodash';
+import {BlurView} from '@react-native-community/blur';
+import {useTranslation} from 'react-i18next';
 
 const MyBottomBar: FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation,
 }) => {
+  const {t} = useTranslation();
   const renderItem = (route: any, index: number) => {
     const {options} = descriptors[route.key];
     const label =
@@ -57,9 +60,9 @@ const MyBottomBar: FC<BottomTabBarProps> = ({
         onPress={onPress}
         onLongPress={onLongPress}
         style={[styles.button, isFocused && styles.activeButton]}>
-        <Icon size={25} color={activeColor} />
+        <Icon size={isFocused ? 30 : 25} color={activeColor} />
         <RN.Text style={[styles.buttonLabel, {color: activeColor}]}>
-          {bottomBarOptions.list[index].label}
+          {`${t(bottomBarOptions.list[index].label)}`}
         </RN.Text>
       </RN.TouchableOpacity>
     );
@@ -67,12 +70,12 @@ const MyBottomBar: FC<BottomTabBarProps> = ({
 
   return (
     <RN.View style={styles.container}>
-      {/* <BlurView
-        blurType="dark"
+      <BlurView
+        blurType="chromeMaterialDark"
         blurAmount={10}
         reducedTransparencyFallbackColor="white"
         style={[RN.StyleSheet.absoluteFill, styles.blurView]}
-      /> */}
+      />
       {map(state.routes, renderItem)}
     </RN.View>
   );
@@ -81,16 +84,16 @@ const MyBottomBar: FC<BottomTabBarProps> = ({
 const styles = RN.StyleSheet.create({
   container: {
     width: SIZES.width - 20 * 2,
-    backgroundColor: addAlpha(COLORS.ebon, 0.8),
+    // backgroundColor: addAlpha(COLORS.ebon, 0.8),
     bottom: 30,
-    borderRadius: 40,
+    borderRadius: 25,
     alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
     overflow: 'hidden',
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
   },
   button: {
     flex: 1,
@@ -101,15 +104,15 @@ const styles = RN.StyleSheet.create({
     borderColor: COLORS.transparent,
   },
   activeButton: {
-    backgroundColor: addAlpha(COLORS.blue2, 0.2),
-    borderColor: COLORS.blue2,
+    // backgroundColor: addAlpha(COLORS.blue2, 0.2),
+    // borderColor: COLORS.blue2,
   },
   buttonLabel: {
     fontSize: 12,
     fontWeight: '500',
   },
   blurView: {
-    borderRadius: 40,
+    borderRadius: 25,
   },
 });
 
